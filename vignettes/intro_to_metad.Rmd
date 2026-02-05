@@ -34,7 +34,7 @@ d <- sim_metad(
 
 m <- fit_metad(bf(N ~ 0 + Intercept),
   data = d,
-  cores = 4, file = "models/metad.rds",
+  file = "models/metad.rds",
   prior = prior(normal(0, 1)) +
     prior(normal(0, 1), class = dprime) +
     prior(normal(0, 1), class = c) +

@@ -37,7 +37,7 @@ m <- fit_metad(
     N ~ 0 + Intercept + condition,
     dprime + c ~ 0 + Intercept + condition
   ),
-  data = d, cores = 4, file = "models/metad_condition.rds",
+  data = d, file = "models/metad_condition.rds",
   prior = prior(normal(0, 1)) +
     prior(normal(0, 1), dpar = dprime) +
     prior(normal(0, 1), dpar = c) +
@@ -177,7 +177,7 @@ m <- fit_metad(
       metac2one1diff + metac2one2diff + metac2one3diff ~
       0 + Intercept + condition
   ),
-  data = d, cores = 4, file = "models/metad_condition2.rds",
+  data = d, file = "models/metad_condition2.rds",
   prior = prior(normal(0, 1)) +
     prior(normal(0, 1), dpar = dprime) +
     prior(normal(0, 1), dpar = c) +
@@ -309,7 +309,7 @@ m2 <- fit_metad(
       0 + Intercept
   ),
   data = d.summary, aggregate = FALSE,
-  cores = 4, file = "models/metad_condition3.rds",
+  file = "models/metad_condition3.rds",
   prior = prior(normal(0, 1)) +
     prior(normal(0, 1), dpar = dprime) +
     prior(normal(0, 1), dpar = c) +

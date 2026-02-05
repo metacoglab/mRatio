@@ -1,12 +1,14 @@
 #' Convert binary variable `x` from `{0, 1}` to `{-1, 1}`
 #' @param x a binary variable interpretable as `0` or `1`
 #' @returns `1` if `x==1`, else `-1`
+#' @rdname signed
 #' @export
 to_signed <- function(x) ifelse(x, 1, -1)
 
 #' Convert binary variable `x` from `{-1, 1}` to `{0, 1}`
 #' @param x a binary variable interpretable as `-1` or `1`
 #' @returns `1` if `x==1`, else `0`
+#' @rdname signed
 #' @export
 to_unsigned <- function(x) as.numeric(x > 0)
 
@@ -17,6 +19,7 @@ to_unsigned <- function(x) as.numeric(x > 0)
 #' @param response type 1 response (0 or 1)
 #' @param confidence type 2 response/confidence rating (1:K)
 #' @param K maximum confidence level
+#' @rdname aggregation
 #' @export
 joint_response <- function(response, confidence, K) {
   ifelse(response, confidence + K, K + 1 - confidence)
@@ -26,6 +29,7 @@ joint_response <- function(response, confidence, K) {
 #' compute the corresponding probabilities.
 #' @param x A vector of counts of joint type 1/type 2 responses
 #' @returns A vector of response probabilities
+#' @rdname aggregation
 #' @export
 response_probabilities <- function(x) {
   if ((length(x) %% 4) != 0) {
@@ -54,6 +58,7 @@ response_probabilities <- function(x) {
 #'  N(stimulus==0, confidence==1), ..., N(stimulus==0, confidence==K),
 #'  N(stimulus==1, confidence==K), ..., N(stimulus==1, confidence==1),
 #'  N(stimulus==1, confidence==1), ..., N(stimulus==1, confidence==K)]`
+#' @rdname aggregation
 #' @export
 metad_aggregate <- function(data, ..., .response = "N", K = NULL) {
   # number of confidence levels
@@ -146,8 +151,8 @@ fit_metad <- function(formula, data, ..., aggregate = TRUE, K = NULL,
   data.aggregated <- NULL
 
   # ensure formula is a brmsformula
-  if (!("brmsformula" %in% attr(f, class))) {
-    formula <- bf(formula)
+  if (!("brmsformula" %in% attr(formula, 'class'))) {
+    formula <- brms::bf(formula)
   }
 
   # determine response variable

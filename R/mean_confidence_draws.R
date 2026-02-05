@@ -11,6 +11,7 @@
 #'   .chain, .iteration, .draw: identifiers for the posterior sample
 #'   stimulus: indicator for stimulus presence
 #'   .epred: the predicted mean confidence
+#' @rdname mean_conf_draws
 #' @export
 mean_confidence_draws <- function(object, newdata, ...,
                                   by_stimulus = TRUE, by_response = TRUE) {
@@ -98,6 +99,7 @@ mean_confidence_draws <- function(object, newdata, ...,
 #'   .chain, .iteration, .draw: identifiers for the posterior sample
 #'   stimulus: indicator for stimulus presence
 #'   .epred: the predicted mean confidence
+#' @rdname mean_conf_draws
 #' @export
 add_mean_confidence_draws <- function(newdata, object, ...) {
   mean_confidence_draws(object, newdata, ...)

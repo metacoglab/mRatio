@@ -2,6 +2,7 @@
 % Please edit documentation in R/mean_confidence_draws.R
 \name{mean_confidence_draws}
 \alias{mean_confidence_draws}
+\alias{add_mean_confidence_draws}
 \title{Obtain posterior draws of mean confidence separately for each possible stimulus}
 \usage{
 mean_confidence_draws(
@@ -11,13 +12,15 @@ mean_confidence_draws(
   by_stimulus = TRUE,
   by_response = TRUE
 )
+
+add_mean_confidence_draws(newdata, object, ...)
 }
 \arguments{
-\item{object}{the \code{brms} model with the \code{metad} family}
+\item{object}{The \code{brms} model with the \code{metad} family}
 
 \item{newdata}{Data frame from which to generate posterior predictions}
 
-\item{...}{Additional arguments to tidybayes::epred_draws}
+\item{...}{Additional parameters passed to \code{tidybayes::epred_draws}}
 
 \item{by_stimulus}{If TRUE, predict mean confidence separately by stimulus}
 
@@ -31,7 +34,16 @@ columns:
 .chain, .iteration, .draw: identifiers for the posterior sample
 stimulus: indicator for stimulus presence
 .epred: the predicted mean confidence
+
+a tibble containing posterior draws of mean confidence with the following
+columns:
+.row: the row of \code{newdata}
+.chain, .iteration, .draw: identifiers for the posterior sample
+stimulus: indicator for stimulus presence
+.epred: the predicted mean confidence
 }
 \description{
+Obtain posterior draws of mean confidence separately for each possible stimulus
+
 Obtain posterior draws of mean confidence separately for each possible stimulus
 }

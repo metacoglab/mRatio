@@ -2,19 +2,27 @@
 % Please edit documentation in R/metad_family.R
 \name{normal_lcdf}
 \alias{normal_lcdf}
+\alias{normal_lccdf}
 \title{The normal cumulative distribution function}
 \usage{
 normal_lcdf(x, mu)
+
+normal_lccdf(x, mu)
 }
 \arguments{
-\item{x}{The value to evaluate the lcdf at}
+\item{x}{The value to evaluate the lccdf at}
 
 \item{mu}{The mean of the normal distribution}
 }
 \value{
 \code{log(P(X < x))} where X is sampled from a normal distribution
 with mean \code{mu} and standard deviation of \code{1}
+
+\code{log(P(X > x))} where X is sampled from a normal distribution
+with mean \code{mu} and standard deviation of \code{1}
 }
 \description{
 The normal cumulative distribution function
+
+The complement of the normal cumulative distribution function
 }

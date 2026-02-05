@@ -2,16 +2,23 @@
 % Please edit documentation in R/mRatio.R
 \name{to_signed}
 \alias{to_signed}
+\alias{to_unsigned}
 \title{Convert binary variable \code{x} from \verb{\{0, 1\}} to \verb{\{-1, 1\}}}
 \usage{
 to_signed(x)
+
+to_unsigned(x)
 }
 \arguments{
-\item{x}{a binary variable interpretable as \code{0} or \code{1}}
+\item{x}{a binary variable interpretable as \code{-1} or \code{1}}
 }
 \value{
 \code{1} if \code{x==1}, else \code{-1}
+
+\code{1} if \code{x==1}, else \code{0}
 }
 \description{
 Convert binary variable \code{x} from \verb{\{0, 1\}} to \verb{\{-1, 1\}}
+
+Convert binary variable \code{x} from \verb{\{-1, 1\}} to \verb{\{0, 1\}}
 }

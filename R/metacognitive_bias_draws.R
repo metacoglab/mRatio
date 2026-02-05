@@ -11,6 +11,7 @@ metacognitive_bias <- function(...) {
 #' @param newdata Data frame from which to generate estimates
 #' @param ... additional parameters to pass to `tidybayes::linpred_draws`
 #' @param by_response If `TRUE`, generate separate estimates for each response.
+#' @rdname bias_draws
 #' @export
 metacognitive_bias_draws <- function(object, newdata, ..., by_response = TRUE) {
   dpar <- object$family$dpar[stringr::str_starts(object$family$dpar, "metac2")]
@@ -45,6 +46,7 @@ metacognitive_bias_draws <- function(object, newdata, ..., by_response = TRUE) {
 #' @param object the `brms` model with the `metad` family
 #' @param ... additional parameters to pass to `tidybayes::linpred_draws`
 #' @param by_response If `TRUE`, generate separate estimates for each response.
+#' @rdname bias_draws
 #' @export
 add_metacognitive_bias_draws <- function(newdata, object, ..., by_response = TRUE) {
   metacognitive_bias_draws(object, newdata, ..., by_response = by_response)

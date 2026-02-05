@@ -2,6 +2,7 @@
 #' @param S a vector of standard deviations
 #' @param OMEGA a correlation matrix
 #' @returns a `[N x N]` covariance matrix, where `N = length(S)`.
+#' @rdname matrix_helpers
 #' @export
 cov_matrix <- function(S, OMEGA) {
   diag(S) %*% OMEGA %*% diag(S)
@@ -13,6 +14,7 @@ cov_matrix <- function(S, OMEGA) {
 #' @param nrow the number of rows (and columns) of the resulting matrix
 #' @returns An `[nrow x nrow]` matrix with values along the diagonal equal
 #' to `1` and values off of the diagonal equal to `r`
+#' @rdname matrix_helpers
 #' @export
 corr_matrix <- function(r, nrow = 2) {
   diag(1 - r, nrow) + r
@@ -26,6 +28,7 @@ corr_matrix <- function(r, nrow = 2) {
 #' `mu` (a matrix), row-wise covariances `sigma_1`, and column-wise
 #' covariances `sigma_2`, where `L_sigma_1` and `L_sigma_2` are the
 #' Cholesky-decomposed covariance matrices
+#' @rdname matrix_helpers
 #' @export
 rmatrixnorm <- function(mu, L_sigma_1, L_sigma_2) {
   mu +
@@ -73,6 +76,7 @@ rmatrixnorm <- function(mu, L_sigma_1, L_sigma_2) {
 #'   - `d_prime`:`theta_2`: the simulated agent's parameter values
 #' If `summarize=TRUE`, the `trial` column is replaced with an `n` column indicating
 #' the number of simulated type 1/type 2 responses for each possible value.
+#' @rdname sim
 #' @export
 sim_metad <- function(N_trials = 100, d_prime = 1, c = 0, log_M = 0,
                       c2_0_diff = rep(.5, 3), c2_1_diff = rep(.5, 3),
@@ -180,6 +184,7 @@ sim_metad <- function(N_trials = 100, d_prime = 1, c = 0, log_M = 0,
 #'   - `d_prime`:`theta_2`: the simulated agent's parameter values
 #' If `summarize=TRUE`, the `trial` column is replaced with an `n` column indicating
 #' the number of simulated type 1/type 2 responses for each possible value.
+#' @rdname sim
 #' @export
 sim_metad_condition <- function(N_trials = 100, d_prime = rep(1, 2), c = rep(0, 2), log_M = rep(0, 2),
                                 c2_0_diff = list(rep(.5, 3), rep(.5, 3)),
@@ -258,6 +263,7 @@ sim_metad_condition <- function(N_trials = 100, d_prime = rep(1, 2), c = rep(0, 
 #'   - `d_prime`:`theta_2`: the simulated agent's parameter values
 #' If `summarize=TRUE`, the `trial` column is replaced with an `n` column indicating
 #' the number of simulated type 1/type 2 responses for each possible value.
+#' @rdname sim
 #' @export
 sim_metad_participant <- function(N_participants = 100, N_trials = 100,
                                   mu_d_prime = 1, sd_d_prime = .5, mu_c = 0, sd_c = .5,
@@ -362,6 +368,7 @@ sim_metad_participant <- function(N_participants = 100, N_trials = 100,
 #'   - `d_prime`:`theta_2`: the simulated agent's parameter values
 #' If `summarize=TRUE`, the `trial` column is replaced with an `n` column indicating
 #' the number of simulated type 1/type 2 responses for each possible value.
+#' @rdname sim
 #' @export
 sim_metad_participant_condition <-
   function(N_participants = 100, N_trials = 100,

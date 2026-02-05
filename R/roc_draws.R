@@ -12,6 +12,7 @@
 #'   confidence: the type 2 confidence response
 #'   p_fa: the cumulative probability of a 'present'/'old' response for stimulus==0
 #'   p_hit: the cumulative probability of a 'present'/'old' response for stimulus==1
+#' @rdname roc_draws
 #' @export
 roc1_draws <- function(object, newdata, ..., bounds = FALSE) {
   draws <- tidybayes::epred_draws(object = object, newdata = newdata, ...)
@@ -87,6 +88,7 @@ roc1_draws <- function(object, newdata, ..., bounds = FALSE) {
 #'   confidence: the type 2 confidence response
 #'   p_fa: the cumulative probability of a 'present'/'old' response for stimulus==0
 #'   p_hit: the cumulative probability of a 'present'/'old' response for stimulus==1
+#' @rdname roc_draws
 #' @export
 add_roc1_draws <- function(newdata, object, ..., bounds = FALSE) {
   roc1_draws(object, newdata, ..., bounds = bounds)
@@ -105,6 +107,7 @@ add_roc1_draws <- function(newdata, object, ..., bounds = FALSE) {
 #'   confidence: the type 2 confidence response
 #'   p_fa2: the cumulative probability of an incorrect but confident response
 #'   p_hit2: the cumulative probability of a correct and confident response
+#' @rdname roc_draws
 #' @export
 roc2_draws <- function(object, newdata, ..., bounds = FALSE) {
   draws <- tidybayes::epred_draws(object = object, newdata = newdata, ...)
@@ -182,6 +185,7 @@ roc2_draws <- function(object, newdata, ..., bounds = FALSE) {
 #'   confidence: the type 2 confidence response
 #'   p_fa2: the cumulative probability of an incorrect but confident response
 #'   p_hit2: the cumulative probability of a correct and confident response
+#' @rdname roc_draws
 #' @export
 add_roc2_draws <- function(newdata, object, ..., bounds = FALSE) {
   roc2_draws(object, newdata, ..., bounds = bounds)

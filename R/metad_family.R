@@ -114,6 +114,7 @@ get_metac <- function(model) {
 #' @param mu The mean of the normal distribution
 #' @returns `log(P(X < x))` where X is sampled from a normal distribution
 #' with mean `mu` and standard deviation of `1`
+#' @rdname normal_dist
 #' @export
 normal_lcdf <- function(x, mu) pnorm(x, mean = mu, log.p = TRUE)
 
@@ -122,6 +123,7 @@ normal_lcdf <- function(x, mu) pnorm(x, mean = mu, log.p = TRUE)
 #' @param mu The mean of the normal distribution
 #' @returns `log(P(X > x))` where X is sampled from a normal distribution
 #' with mean `mu` and standard deviation of `1`
+#' @rdname normal_dist
 #' @export
 normal_lccdf <- function(x, mu) pnorm(x, mean = mu, log.p = TRUE, lower.tail = FALSE)
 

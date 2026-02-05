@@ -2,9 +2,12 @@
 % Please edit documentation in R/metacognitive_bias_draws.R
 \name{metacognitive_bias_draws}
 \alias{metacognitive_bias_draws}
+\alias{add_metacognitive_bias_draws}
 \title{Get draws of \code{meta-delta}, an index of metacognitive bias.}
 \usage{
 metacognitive_bias_draws(object, newdata, ..., by_response = TRUE)
+
+add_metacognitive_bias_draws(newdata, object, ..., by_response = TRUE)
 }
 \arguments{
 \item{object}{the \code{brms} model with the \code{metad} family}
@@ -16,5 +19,7 @@ metacognitive_bias_draws(object, newdata, ..., by_response = TRUE)
 \item{by_response}{If \code{TRUE}, generate separate estimates for each response.}
 }
 \description{
+Get draws of \code{meta-delta}, an index of metacognitive bias.
+
 Get draws of \code{meta-delta}, an index of metacognitive bias.
 }

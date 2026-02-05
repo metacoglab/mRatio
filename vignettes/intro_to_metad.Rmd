@@ -30,7 +30,7 @@ d <- sim_metad(
 
 m <- fit_metad(bf(N ~ 0 + Intercept),
   data = d,
-  cores = 4, backend = "cmdstanr",
+  cores = 4, file = "models/metad.rds",
   prior = prior(normal(0, 1)) +
     prior(normal(0, 1), class = dprime) +
     prior(normal(0, 1), class = c) +
@@ -72,7 +72,7 @@ predicted_draws(m, metad_aggregate(d)) |>
   geom_pointrange(aes(y = .prediction, ymin = .lower, ymax = .upper)) +
   scale_alpha_discrete(range = c(.25, 1)) +
   facet_wrap(~stimulus, labeller = label_both) +
-  theme_classic(18)
+  theme_classic()
 ```
 
 ```{r epred}
@@ -94,7 +94,7 @@ epred_draws(m, newdata = tibble(.row = 1)) |>
   geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
   scale_alpha_discrete(range = c(.25, 1)) +
   facet_wrap(~stimulus, labeller = label_both) +
-  theme_classic(18)
+  theme_classic()
 ```
 
 ```{r mean_confidence}
@@ -125,7 +125,7 @@ tibble(.row = 1) |>
   coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
   xlab("P(False Alarm)") +
   ylab("P(Hit)") +
-  theme_bw(18)
+  theme_bw()
 ```
 
 ```{r roc2}
@@ -146,7 +146,7 @@ tibble(.row = 1) |>
   coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
   xlab("P(Type 2 False Alarm)") +
   ylab("P(Type 2 Hit)") +
-  theme_bw(18)
+  theme_bw()
 ```
 
 

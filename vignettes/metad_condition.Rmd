@@ -33,7 +33,7 @@ m <- fit_metad(
     N ~ 0 + Intercept + condition,
     dprime + c ~ 0 + Intercept + condition
   ),
-  data = d, cores = 4, backend = "cmdstanr",
+  data = d, cores = 4, file = "models/metad_condition.rds",
   prior = prior(normal(0, 1)) +
     prior(normal(0, 1), dpar = dprime) +
     prior(normal(0, 1), dpar = c) +
@@ -64,7 +64,7 @@ d |>
   geom_col(aes(y = .true)) +
   geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
   facet_wrap(condition ~ stimulus, labeller = label_both) +
-  theme_classic(18)
+  theme_classic()
 ```
 
 ```{r parameters}
@@ -89,7 +89,7 @@ predicted_draws(m, newdata = select(m$data, condition, N)) |>
     position = position_dodge(1)
   ) +
   facet_grid(~stimulus, labeller = label_both) +
-  theme_classic(18)
+  theme_classic()
 ```
 
 ```{r mean_confidence}
@@ -123,7 +123,7 @@ d |>
   coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
   xlab("P(False Alarm)") +
   ylab("P(Hit)") +
-  theme_bw(18)
+  theme_bw()
 ```
 
 ```{r roc2}
@@ -145,7 +145,7 @@ d |>
   coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
   xlab("P(Type 2 False Alarm)") +
   ylab("P(Type 2 Hit)") +
-  theme_bw(18)
+  theme_bw()
 ```
 
 ################################################################################
@@ -173,7 +173,7 @@ m <- fit_metad(
       metac2one1diff + metac2one2diff + metac2one3diff ~
       0 + Intercept + condition
   ),
-  data = d, cores = 4, backend = "cmdstanr",
+  data = d, cores = 4, file = "models/metad_condition2.rds",
   prior = prior(normal(0, 1)) +
     prior(normal(0, 1), dpar = dprime) +
     prior(normal(0, 1), dpar = c) +
@@ -204,7 +204,7 @@ d |>
   geom_col(aes(y = .true)) +
   geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
   facet_wrap(condition ~ stimulus, labeller = label_both) +
-  theme_classic(18)
+  theme_classic()
 ```
 
 ```{r parameters2}
@@ -230,7 +230,7 @@ predicted_draws(m, newdata = select(m$data, condition, N)) |>
     position = position_dodge(1)
   ) +
   facet_grid(~stimulus) +
-  theme_classic(18)
+  theme_classic()
 ```
 
 
@@ -290,7 +290,7 @@ d |>
   coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
   xlab("P(Type 2 False Alarm)") +
   ylab("P(Type 2 Hit)") +
-  theme_bw(18)
+  theme_bw()
 ```
 
 
@@ -305,7 +305,7 @@ m2 <- fit_metad(
       0 + Intercept
   ),
   data = d.summary, aggregate = FALSE,
-  cores = 4, backend = "cmdstanr",
+  cores = 4, file = "models/metad_condition3.rds",
   prior = prior(normal(0, 1)) +
     prior(normal(0, 1), dpar = dprime) +
     prior(normal(0, 1), dpar = c) +
@@ -336,7 +336,7 @@ d |>
   geom_col(aes(y = .true)) +
   geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
   facet_wrap(condition ~ stimulus, labeller = label_both) +
-  theme_classic(18)
+  theme_classic()
 ```
 
 ```{r model_comparison}

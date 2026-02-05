@@ -57,28 +57,33 @@ g <- fit_metad(bf(N ~ 0 + Intercept),
     prior(lognormal(0, 1), class = metac2zero2diff) +
     prior(lognormal(0, 1), class = metac2one1diff) +
     prior(lognormal(0, 1), class = metac2one2diff),
-  stanvars = gumbel_min, distribution = "gumbel_min"
+  stanvars = gumbel_min, file = "models/gumbel.rds"
 )
 summary(g, prior = TRUE)
 ```
 
-```{epred}
-epred_draws(g, newdata=tibble(.row=1)) |>
+```{r epred}
+epred_draws(g, newdata = tibble(.row = 1)) |>
   group_by(.row, .category) |>
   median_qi(.epred) |>
-  mutate(.true=response_probabilities(g$data$N[1,])) |>
-  separate(.category, into=c('var', 'stimulus', 'joint_response'),
-           sep='_', convert=TRUE) |>
-  mutate(response=factor(as.integer(joint_response > max(joint_response)/2)),
-         confidence=factor(ifelse(joint_response > max(joint_response)/2,
-                                  joint_response-max(joint_response)/2,
-                                  max(joint_response)/2 - joint_response + 1))) |>
-  ggplot(aes(x=joint_response)) +
-  geom_col(aes(y=.true, fill=response, alpha=confidence), ) +
-  geom_pointrange(aes(y=.epred, ymin=.lower, ymax=.upper)) +
-  scale_alpha_discrete(range=c(.25, 1)) +
-  facet_wrap(~ stimulus, labeller=label_both) +
-  theme_classic(18)
+  mutate(.true = response_probabilities(g$data$N[1, ])) |>
+  separate(.category,
+    into = c("var", "stimulus", "joint_response"),
+    sep = "_", convert = TRUE
+  ) |>
+  mutate(
+    response = factor(as.integer(joint_response > max(joint_response) / 2)),
+    confidence = factor(ifelse(joint_response > max(joint_response) / 2,
+      joint_response - max(joint_response) / 2,
+      max(joint_response) / 2 - joint_response + 1
+    ))
+  ) |>
+  ggplot(aes(x = joint_response)) +
+  geom_col(aes(y = .true, fill = response, alpha = confidence), ) +
+  geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
+  scale_alpha_discrete(range = c(.25, 1)) +
+  facet_wrap(~stimulus, labeller = label_both) +
+  theme_classic()
 ```
 
 ```{r mean_confidence}
@@ -109,7 +114,7 @@ tibble(.row = 1) |>
   coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
   xlab("P(False Alarm)") +
   ylab("P(Hit)") +
-  theme_bw(18)
+  theme_bw()
 ```
 
 ```{r roc2}
@@ -129,5 +134,5 @@ roc2_draws(g, tibble(.row = 1), bounds = TRUE) |>
   coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
   xlab("P(Type 2 False Alarm)") +
   ylab("P(Type 2 Hit)") +
-  theme_bw(18)
+  theme_bw()
 ```

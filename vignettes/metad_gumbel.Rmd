@@ -23,34 +23,43 @@ library(mRatio)
 
 
 ```{r gumbel_min}
-gumbel_min_lccdf <- function(y, g) { -exp(y - g) }
-gumbel_min_lcdf <- function(y, g) { log1p(-exp(-exp(y - g))) };
-
-gumbel_min <- stanvar(scode='
+gumbel_min_lccdf <- function(y, g) {
+  -exp(y - g)
+}
+gumbel_min_lcdf <- function(y, g) {
+  log1p(-exp(-exp(y - g)))
+}
+gumbel_min <- stanvar(
+  scode = "
   real gumbel_min_lccdf(real y, real g) {
     return -exp(y - g);
   }
   real gumbel_min_lcdf(real y, real g) {
     return log1m_exp(-exp(y - g));
-  }',
-  block='functions')
+  }",
+  block = "functions"
+)
 ```
 
 ```{r model}
-d <- sim_metad(N_trials=1000000, d_prime=.75, c=-.5, log_M=-1,
-               c2_0=c(.25, .75, 1), c2_1=c(.5, 1, 1.25))
+d <- sim_metad(
+  N_trials = 1000000, d_prime = .75, c = -.5, log_M = -1,
+  c2_0 = c(.25, .75, 1), c2_1 = c(.5, 1, 1.25)
+)
 
-g <- fit_metad(bf(N ~ 0 + Intercept), data=d,
-               cores=4, backend='cmdstanr',
-               prior=prior(normal(0, 1)) +
-                 prior(normal(0, 1), class=dprime) +
-                 prior(normal(0, 1), class=c) +
-                 prior(lognormal(0, 1), class=metac2zero1diff) +
-                 prior(lognormal(0, 1), class=metac2zero2diff) +
-                 prior(lognormal(0, 1), class=metac2one1diff) +
-                 prior(lognormal(0, 1), class=metac2one2diff),
-               stanvars=gumbel_min, distribution='gumbel_min')
-summary(g, prior=TRUE)
+g <- fit_metad(bf(N ~ 0 + Intercept),
+  data = d,
+  cores = 4, backend = "cmdstanr",
+  prior = prior(normal(0, 1)) +
+    prior(normal(0, 1), class = dprime) +
+    prior(normal(0, 1), class = c) +
+    prior(lognormal(0, 1), class = metac2zero1diff) +
+    prior(lognormal(0, 1), class = metac2zero2diff) +
+    prior(lognormal(0, 1), class = metac2one1diff) +
+    prior(lognormal(0, 1), class = metac2one2diff),
+  stanvars = gumbel_min, distribution = "gumbel_min"
+)
+summary(g, prior = TRUE)
 ```
 
 ```{epred}
@@ -74,46 +83,51 @@ epred_draws(g, newdata=tibble(.row=1)) |>
 
 ```{r mean_confidence}
 ## calculate mean confidence per stimulus
-tibble(.row=1) |>
+tibble(.row = 1) |>
   add_mean_confidence_draws(g) |>
   median_qi(.epred) |>
   left_join(d |>
-              group_by(stimulus, response, confidence) |>
-              summarize(theta_2=first(theta_2)) |>
-              group_by(stimulus, response) |>
-              summarize(.true=sum(theta_2 * confidence)))
+    group_by(stimulus, response, confidence) |>
+    summarize(theta_2 = first(theta_2)) |>
+    group_by(stimulus, response) |>
+    summarize(.true = sum(theta_2 * confidence)))
 ```
 
 ```{r roc1}
 # psuedo type-1 ROC
-tibble(.row=1) |>
-  add_roc1_draws(g, bounds=TRUE) |>
+tibble(.row = 1) |>
+  add_roc1_draws(g, bounds = TRUE) |>
   median_qi(p_fa, p_hit) |>
-  ggplot(aes(x=p_fa, xmin=p_fa.lower, xmax=p_fa.upper,
-             y=p_hit, ymin=p_hit.lower, ymax=p_hit.upper)) +
-  geom_abline(slope=1, intercept=0, linetype='dashed') +
-  geom_errorbar(orientation='y', width=.01) +
-  geom_errorbar(orientation='x', width=.01) +
+  ggplot(aes(
+    x = p_fa, xmin = p_fa.lower, xmax = p_fa.upper,
+    y = p_hit, ymin = p_hit.lower, ymax = p_hit.upper
+  )) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  geom_errorbar(orientation = "y", width = .01) +
+  geom_errorbar(orientation = "x", width = .01) +
   geom_line() +
-  coord_fixed(xlim=0:1, ylim=0:1, expand=FALSE) +
-  xlab('P(False Alarm)') + ylab('P(Hit)') +
+  coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
+  xlab("P(False Alarm)") +
+  ylab("P(Hit)") +
   theme_bw(18)
-
 ```
 
 ```{r roc2}
 # type 2 ROC
-roc2_draws(g, tibble(.row=1), bounds=TRUE) |>
+roc2_draws(g, tibble(.row = 1), bounds = TRUE) |>
   median_qi(p_hit2, p_fa2) |>
-  mutate(response=factor(response)) |>
-  ggplot(aes(x=p_fa2, xmin=p_fa2.lower, xmax=p_fa2.upper,
-             y=p_hit2, ymin=p_hit2.lower, ymax=p_hit2.upper,
-             color=response)) +
-  geom_abline(slope=1, intercept=0, linetype='dashed') +
-  geom_errorbar(orientation='y', width=.01) +
-  geom_errorbar(orientation='x', width=.01) +
+  mutate(response = factor(response)) |>
+  ggplot(aes(
+    x = p_fa2, xmin = p_fa2.lower, xmax = p_fa2.upper,
+    y = p_hit2, ymin = p_hit2.lower, ymax = p_hit2.upper,
+    color = response
+  )) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  geom_errorbar(orientation = "y", width = .01) +
+  geom_errorbar(orientation = "x", width = .01) +
   geom_line() +
-  coord_fixed(xlim=0:1, ylim=0:1, expand=FALSE) +
-  xlab('P(Type 2 False Alarm)') + ylab('P(Type 2 Hit)') +
+  coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
+  xlab("P(Type 2 False Alarm)") +
+  ylab("P(Type 2 Hit)") +
   theme_bw(18)
 ```

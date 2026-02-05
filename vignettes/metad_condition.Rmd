@@ -22,23 +22,29 @@ library(mRatio)
 ```
 
 ```{r}
-d <- sim_metad_condition(N_trials=100000,
-                         d_prime=c(1, 2), c=c(-1, 1),
-                         log_M=c(-3/4, -1/3))
+d <- sim_metad_condition(
+  N_trials = 100000,
+  d_prime = c(1, 2), c = c(-1, 1),
+  log_M = c(-3 / 4, -1 / 3)
+)
 
-m <- fit_metad(bf(N ~ 0 + Intercept + condition,
-                  dprime+c ~ 0 + Intercept + condition),
-               data=d, cores=4, backend='cmdstanr',
-               prior=prior(normal(0, 1)) +
-                 prior(normal(0, 1), dpar=dprime) +
-                 prior(normal(0, 1), dpar=c) +
-                 prior(lognormal(0, 1), class=metac2zero1diff) +
-                 prior(lognormal(0, 1), class=metac2zero2diff) +
-                 prior(lognormal(0, 1), class=metac2zero3diff) +
-                 prior(lognormal(0, 1), class=metac2one1diff) +
-                 prior(lognormal(0, 1), class=metac2one2diff) +
-                 prior(lognormal(0, 1), class=metac2one3diff))
-summary(m, prior=TRUE)
+m <- fit_metad(
+  bf(
+    N ~ 0 + Intercept + condition,
+    dprime + c ~ 0 + Intercept + condition
+  ),
+  data = d, cores = 4, backend = "cmdstanr",
+  prior = prior(normal(0, 1)) +
+    prior(normal(0, 1), dpar = dprime) +
+    prior(normal(0, 1), dpar = c) +
+    prior(lognormal(0, 1), class = metac2zero1diff) +
+    prior(lognormal(0, 1), class = metac2zero2diff) +
+    prior(lognormal(0, 1), class = metac2zero3diff) +
+    prior(lognormal(0, 1), class = metac2one1diff) +
+    prior(lognormal(0, 1), class = metac2one2diff) +
+    prior(lognormal(0, 1), class = metac2one3diff)
+)
+summary(m, prior = TRUE)
 ```
 
 ```{r epred}
@@ -47,37 +53,42 @@ d |>
   add_epred_draws(m) |>
   median_qi() |>
   group_by(condition) |>
-  mutate(.true=response_probabilities(m$data$N[first(condition),]),
-         .category=as.integer(.category),
-         condition=factor(condition),
-         joint_response=factor((.category-1) %% (n_distinct(d$confidence)*2) + 1),
-         stimulus=factor(as.integer(.category > n_distinct(d$confidence)*2))) |>
-  ggplot(aes(x=joint_response, fill=condition)) +
-  geom_col(aes(y=.true)) +
-  geom_pointrange(aes(y=.epred, ymin=.lower, ymax=.upper)) +
-  facet_wrap(condition ~ stimulus, labeller=label_both) +
+  mutate(
+    .true = response_probabilities(m$data$N[first(condition), ]),
+    .category = as.integer(.category),
+    condition = factor(condition),
+    joint_response = factor((.category - 1) %% (n_distinct(d$confidence) * 2) + 1),
+    stimulus = factor(as.integer(.category > n_distinct(d$confidence) * 2))
+  ) |>
+  ggplot(aes(x = joint_response, fill = condition)) +
+  geom_col(aes(y = .true)) +
+  geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
+  facet_wrap(condition ~ stimulus, labeller = label_both) +
   theme_classic(18)
 ```
 
 ```{r parameters}
-linpred_draws(m, newdata=tibble(condition=1:2), dpar=TRUE, transform=TRUE) |>
-  pivot_longer(.linpred:metac2one3diff, names_to='.variable', values_to='.value') |>
-  group_by(.variable, .add=TRUE) |>
+linpred_draws(m, newdata = tibble(condition = 1:2), dpar = TRUE, transform = TRUE) |>
+  pivot_longer(.linpred:metac2one3diff, names_to = ".variable", values_to = ".value") |>
+  group_by(.variable, .add = TRUE) |>
   median_qi()
 ```
 
 ```{r postpred}
-predicted_draws(m, newdata=select(m$data, condition, N)) |>
+predicted_draws(m, newdata = select(m$data, condition, N)) |>
   group_by(condition, .row, .category) |>
   median_qi(.prediction) |>
-  mutate(y=as.integer(t(m$data$N)),
-         stimulus=rep(0:1, each=8, times=2),
-         joint_response=rep(1:8, 4)) |>
-  ggplot(aes(x=factor(joint_response))) +
-  geom_bar(aes(y=y, fill=condition), position=position_dodge(1), stat='identity') +
-  geom_pointrange(aes(y=.prediction, ymin=.lower, ymax=.upper, group=condition),
-                  position=position_dodge(1)) +
-  facet_grid( ~ stimulus, labeller=label_both) +
+  mutate(
+    y = as.integer(t(m$data$N)),
+    stimulus = rep(0:1, each = 8, times = 2),
+    joint_response = rep(1:8, 4)
+  ) |>
+  ggplot(aes(x = factor(joint_response))) +
+  geom_bar(aes(y = y, fill = condition), position = position_dodge(1), stat = "identity") +
+  geom_pointrange(aes(y = .prediction, ymin = .lower, ymax = .upper, group = condition),
+    position = position_dodge(1)
+  ) +
+  facet_grid(~stimulus, labeller = label_both) +
   theme_classic(18)
 ```
 
@@ -87,47 +98,53 @@ d |>
   add_mean_confidence_draws(m) |>
   median_qi(.epred) |>
   left_join(d |>
-              group_by(condition, stimulus, response, confidence) |>
-              summarize(theta_2=first(theta_2)) |>
-              group_by(condition, stimulus, response) |>
-              summarize(.true=sum(theta_2 * confidence)))
+    group_by(condition, stimulus, response, confidence) |>
+    summarize(theta_2 = first(theta_2)) |>
+    group_by(condition, stimulus, response) |>
+    summarize(.true = sum(theta_2 * confidence)))
 ```
 
 ```{r roc1}
 d |>
   distinct(condition) |>
-  mutate(condition=factor(condition)) |>
-  add_roc1_draws(m, bounds=TRUE) |>
-  group_by(condition, .add=TRUE) |>
+  mutate(condition = factor(condition)) |>
+  add_roc1_draws(m, bounds = TRUE) |>
+  group_by(condition, .add = TRUE) |>
   median_qi(p_fa, p_hit) |>
-  ggplot(aes(x=p_fa, xmin=p_fa.lower, xmax=p_fa.upper,
-             y=p_hit, ymin=p_hit.lower, ymax=p_hit.upper,
-             group=condition, color=condition)) +
-  geom_abline(slope=1, intercept=0, linetype='dashed') +
-  geom_errorbar(orientation='y', width=.01) +
-  geom_errorbar(orientation='x', width=.01) +
+  ggplot(aes(
+    x = p_fa, xmin = p_fa.lower, xmax = p_fa.upper,
+    y = p_hit, ymin = p_hit.lower, ymax = p_hit.upper,
+    group = condition, color = condition
+  )) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  geom_errorbar(orientation = "y", width = .01) +
+  geom_errorbar(orientation = "x", width = .01) +
   geom_line() +
-  coord_fixed(xlim=0:1, ylim=0:1, expand=FALSE) +
-  xlab('P(False Alarm)') + ylab('P(Hit)') +
+  coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
+  xlab("P(False Alarm)") +
+  ylab("P(Hit)") +
   theme_bw(18)
 ```
 
 ```{r roc2}
 d |>
   distinct(condition) |>
-  mutate(condition=factor(condition)) |>
-  add_roc2_draws(m, bounds=TRUE) |>
+  mutate(condition = factor(condition)) |>
+  add_roc2_draws(m, bounds = TRUE) |>
   median_qi(p_hit2, p_fa2) |>
-  mutate(response=factor(response)) |>
-  ggplot(aes(x=p_fa2, xmin=p_fa2.lower, xmax=p_fa2.upper,
-             y=p_hit2, ymin=p_hit2.lower, ymax=p_hit2.upper,
-             color=response, linetype=condition)) +
-  geom_abline(slope=1, intercept=0, linetype='dashed') +
-  geom_errorbar(orientation='y', width=.01) +
-  geom_errorbar(orientation='x', width=.01) +
+  mutate(response = factor(response)) |>
+  ggplot(aes(
+    x = p_fa2, xmin = p_fa2.lower, xmax = p_fa2.upper,
+    y = p_hit2, ymin = p_hit2.lower, ymax = p_hit2.upper,
+    color = response, linetype = condition
+  )) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  geom_errorbar(orientation = "y", width = .01) +
+  geom_errorbar(orientation = "x", width = .01) +
   geom_line() +
-  coord_fixed(xlim=0:1, ylim=0:1, expand=FALSE) +
-  xlab('P(Type 2 False Alarm)') + ylab('P(Type 2 Hit)') +
+  coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
+  xlab("P(Type 2 False Alarm)") +
+  ylab("P(Type 2 Hit)") +
   theme_bw(18)
 ```
 
@@ -135,29 +152,39 @@ d |>
 #       Condition-level regression (variable confidence threhsolds)
 ################################################################################
 ```{r model2}
-d <- sim_metad_condition(N_trials=100000,
-                         d_prime=c(1, 2), c=c(-1, 1),
-                         log_M=c(-3/4, -1/3),
-                         c2_0=list(c(.5, 1, 1.5),
-                                   c(.25, .5, .75)),
-                         c2_1=list(c(1/3, 2/3, 1),
-                                   c(1/3, 2/3, 1)))
+d <- sim_metad_condition(
+  N_trials = 100000,
+  d_prime = c(1, 2), c = c(-1, 1),
+  log_M = c(-3 / 4, -1 / 3),
+  c2_0 = list(
+    c(.5, 1, 1.5),
+    c(.25, .5, .75)
+  ),
+  c2_1 = list(
+    c(1 / 3, 2 / 3, 1),
+    c(1 / 3, 2 / 3, 1)
+  )
+)
 
-m <- fit_metad(bf(N ~ 0 + Intercept + condition,
-                  dprime + c + metac2zero1diff + metac2zero2diff + metac2zero3diff +
-                    metac2one1diff + metac2one2diff + metac2one3diff ~
-                      0 + Intercept + condition),
-               data=d, cores=4, backend='cmdstanr',
-               prior=prior(normal(0, 1)) +
-                 prior(normal(0, 1), dpar=dprime) +
-                 prior(normal(0, 1), dpar=c) +
-                 prior(normal(0, 1), dpar=metac2zero1diff) +
-                 prior(normal(0, 1), dpar=metac2zero2diff) +
-                 prior(normal(0, 1), dpar=metac2zero3diff) +
-                 prior(normal(0, 1), dpar=metac2one1diff) +
-                 prior(normal(0, 1), dpar=metac2one2diff) +
-                 prior(normal(0, 1), dpar=metac2one3diff))
-summary(m, prior=TRUE)
+m <- fit_metad(
+  bf(
+    N ~ 0 + Intercept + condition,
+    dprime + c + metac2zero1diff + metac2zero2diff + metac2zero3diff +
+      metac2one1diff + metac2one2diff + metac2one3diff ~
+      0 + Intercept + condition
+  ),
+  data = d, cores = 4, backend = "cmdstanr",
+  prior = prior(normal(0, 1)) +
+    prior(normal(0, 1), dpar = dprime) +
+    prior(normal(0, 1), dpar = c) +
+    prior(normal(0, 1), dpar = metac2zero1diff) +
+    prior(normal(0, 1), dpar = metac2zero2diff) +
+    prior(normal(0, 1), dpar = metac2zero3diff) +
+    prior(normal(0, 1), dpar = metac2one1diff) +
+    prior(normal(0, 1), dpar = metac2one2diff) +
+    prior(normal(0, 1), dpar = metac2one3diff)
+)
+summary(m, prior = TRUE)
 ```
 
 ```{r epred2}
@@ -166,38 +193,43 @@ d |>
   add_epred_draws(m) |>
   median_qi() |>
   group_by(condition) |>
-  mutate(.true=response_probabilities(m$data$N[first(condition),]),
-         .category=as.integer(.category),
-         condition=factor(condition),
-         joint_response=factor((.category-1) %% (n_distinct(d$confidence)*2) + 1),
-         stimulus=factor(as.integer(.category > n_distinct(d$confidence)*2))) |>
-  ggplot(aes(x=joint_response, fill=condition)) +
-  geom_col(aes(y=.true)) +
-  geom_pointrange(aes(y=.epred, ymin=.lower, ymax=.upper)) +
-  facet_wrap(condition ~ stimulus, labeller=label_both) +
+  mutate(
+    .true = response_probabilities(m$data$N[first(condition), ]),
+    .category = as.integer(.category),
+    condition = factor(condition),
+    joint_response = factor((.category - 1) %% (n_distinct(d$confidence) * 2) + 1),
+    stimulus = factor(as.integer(.category > n_distinct(d$confidence) * 2))
+  ) |>
+  ggplot(aes(x = joint_response, fill = condition)) +
+  geom_col(aes(y = .true)) +
+  geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
+  facet_wrap(condition ~ stimulus, labeller = label_both) +
   theme_classic(18)
 ```
 
 ```{r parameters2}
-linpred_draws(m, newdata=tibble(condition=1:2), dpar=TRUE, transform=TRUE) |>
-  pivot_longer(.linpred:metac2one3diff, names_to='.variable', values_to='.value') |>
-  group_by(.variable, .add=TRUE) |>
+linpred_draws(m, newdata = tibble(condition = 1:2), dpar = TRUE, transform = TRUE) |>
+  pivot_longer(.linpred:metac2one3diff, names_to = ".variable", values_to = ".value") |>
+  group_by(.variable, .add = TRUE) |>
   median_qi() |>
   arrange(.variable)
 ```
 
 ```{r postpred2}
-predicted_draws(m, newdata=select(m$data, condition, N)) |>
+predicted_draws(m, newdata = select(m$data, condition, N)) |>
   group_by(condition, .row, .category) |>
   median_qi(.prediction) |>
-  mutate(y=as.integer(t(m$data$N)),
-         stimulus=rep(0:1, each=8, times=2),
-         joint_response=rep(1:8, 4)) |>
-  ggplot(aes(x=factor(joint_response))) +
-  geom_bar(aes(y=y, fill=condition), position=position_dodge(1), stat='identity') +
-  geom_pointrange(aes(y=.prediction, ymin=.lower, ymax=.upper, group=condition),
-                  position=position_dodge(1)) +
-  facet_grid( ~ stimulus) +
+  mutate(
+    y = as.integer(t(m$data$N)),
+    stimulus = rep(0:1, each = 8, times = 2),
+    joint_response = rep(1:8, 4)
+  ) |>
+  ggplot(aes(x = factor(joint_response))) +
+  geom_bar(aes(y = y, fill = condition), position = position_dodge(1), stat = "identity") +
+  geom_pointrange(aes(y = .prediction, ymin = .lower, ymax = .upper, group = condition),
+    position = position_dodge(1)
+  ) +
+  facet_grid(~stimulus) +
   theme_classic(18)
 ```
 
@@ -208,73 +240,83 @@ d |>
   add_mean_confidence_draws(m) |>
   median_qi(.epred) |>
   left_join(d |>
-              group_by(condition, stimulus, response, confidence) |>
-              summarize(theta_2=first(theta_2)) |>
-              group_by(condition, stimulus, response) |>
-              summarize(.true=sum(theta_2 * confidence)))
+    group_by(condition, stimulus, response, confidence) |>
+    summarize(theta_2 = first(theta_2)) |>
+    group_by(condition, stimulus, response) |>
+    summarize(.true = sum(theta_2 * confidence)))
 ```
 
 ```{r roc1_2}
 # psuedo type-1 ROC
 d |>
   distinct(condition) |>
-  mutate(condition=factor(condition)) |>
-  add_roc1_draws(m, bounds=FALSE) |>
-  group_by(condition, .add=TRUE) |>
+  mutate(condition = factor(condition)) |>
+  add_roc1_draws(m, bounds = FALSE) |>
+  group_by(condition, .add = TRUE) |>
   median_qi(p_fa, p_hit) |>
-  ggplot(aes(x=p_fa, xmin=p_fa.lower, xmax=p_fa.upper,
-             y=p_hit, ymin=p_hit.lower, ymax=p_hit.upper,
-             group=condition, color=condition)) +
-  geom_abline(slope=1, intercept=0, linetype='dashed') +
-  geom_errorbar(orientation='y', width=.01) +
-  geom_errorbar(orientation='x', width=.01) +
+  ggplot(aes(
+    x = p_fa, xmin = p_fa.lower, xmax = p_fa.upper,
+    y = p_hit, ymin = p_hit.lower, ymax = p_hit.upper,
+    group = condition, color = condition
+  )) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  geom_errorbar(orientation = "y", width = .01) +
+  geom_errorbar(orientation = "x", width = .01) +
   geom_line() +
   geom_point() +
-  coord_fixed(xlim=0:1, ylim=0:1, expand=FALSE) +
-  xlab('P(False Alarm)') + ylab('P(Hit)') +
+  coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
+  xlab("P(False Alarm)") +
+  ylab("P(Hit)") +
   theme_bw()
 ```
 
 ```{r roc2_2}
 d |>
   distinct(condition) |>
-  mutate(condition=factor(condition)) |>
+  mutate(condition = factor(condition)) |>
   add_roc2_draws(m) |>
   median_qi(p_hit2, p_fa2) |>
-  mutate(response=factor(response)) |>
-  ggplot(aes(x=p_fa2, xmin=p_fa2.lower, xmax=p_fa2.upper,
-             y=p_hit2, ymin=p_hit2.lower, ymax=p_hit2.upper,
-             color=response, linetype=condition)) +
-  geom_abline(slope=1, intercept=0, linetype='dashed') +
-  geom_errorbar(orientation='y', width=.01) +
-  geom_errorbar(orientation='x', width=.01) +
+  mutate(response = factor(response)) |>
+  ggplot(aes(
+    x = p_fa2, xmin = p_fa2.lower, xmax = p_fa2.upper,
+    y = p_hit2, ymin = p_hit2.lower, ymax = p_hit2.upper,
+    color = response, linetype = condition
+  )) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  geom_errorbar(orientation = "y", width = .01) +
+  geom_errorbar(orientation = "x", width = .01) +
   geom_line() +
   geom_point() +
-  coord_fixed(xlim=0:1, ylim=0:1, expand=FALSE) +
-  xlab('P(Type 2 False Alarm)') + ylab('P(Type 2 Hit)') +
+  coord_fixed(xlim = 0:1, ylim = 0:1, expand = FALSE) +
+  xlab("P(Type 2 False Alarm)") +
+  ylab("P(Type 2 Hit)") +
   theme_bw(18)
 ```
 
 
 ```{r model3}
 d.summary <- d |> metad_aggregate(condition)
-m2 <- fit_metad(bf(N ~ 0 + Intercept + condition,
-                   dprime + c ~ 0 + Intercept + condition,
-                   metac2zero1diff + metac2zero2diff + metac2zero3diff +
-                     metac2one1diff + metac2one2diff + metac2one3diff ~
-                       0 + Intercept),
-                data=d.summary, aggregate=FALSE,
-                cores=4, backend='cmdstanr',
-                prior=prior(normal(0, 1)) +
-                  prior(normal(0, 1), dpar=dprime) +
-                  prior(normal(0, 1), dpar=c) +
-                  prior(normal(0, 1), dpar=metac2zero1diff) +
-                  prior(normal(0, 1), dpar=metac2zero2diff) +
-                  prior(normal(0, 1), dpar=metac2zero3diff) +
-                  prior(normal(0, 1), dpar=metac2one1diff) +
-                  prior(normal(0, 1), dpar=metac2one2diff) +
-                  prior(normal(0, 1), dpar=metac2one3diff))
-summary(m2, prior=TRUE)
+m2 <- fit_metad(
+  bf(
+    N ~ 0 + Intercept + condition,
+    dprime + c ~ 0 + Intercept + condition,
+    metac2zero1diff + metac2zero2diff + metac2zero3diff +
+      metac2one1diff + metac2one2diff + metac2one3diff ~
+      0 + Intercept
+  ),
+  data = d.summary, aggregate = FALSE,
+  cores = 4, backend = "cmdstanr",
+  prior = prior(normal(0, 1)) +
+    prior(normal(0, 1), dpar = dprime) +
+    prior(normal(0, 1), dpar = c) +
+    prior(normal(0, 1), dpar = metac2zero1diff) +
+    prior(normal(0, 1), dpar = metac2zero2diff) +
+    prior(normal(0, 1), dpar = metac2zero3diff) +
+    prior(normal(0, 1), dpar = metac2one1diff) +
+    prior(normal(0, 1), dpar = metac2one2diff) +
+    prior(normal(0, 1), dpar = metac2one3diff)
+)
+summary(m2, prior = TRUE)
 ```
 
 ```{r epred3}
@@ -283,15 +325,17 @@ d |>
   add_epred_draws(m2) |>
   median_qi() |>
   group_by(condition) |>
-  mutate(.true=response_probabilities(m$data$N[first(condition),]),
-         .category=as.integer(.category),
-         condition=factor(condition),
-         joint_response=factor((.category-1) %% (n_distinct(d$confidence)*2) + 1),
-         stimulus=factor(as.integer(.category > n_distinct(d$confidence)*2))) |>
-  ggplot(aes(x=joint_response, fill=condition)) +
-  geom_col(aes(y=.true)) +
-  geom_pointrange(aes(y=.epred, ymin=.lower, ymax=.upper)) +
-  facet_wrap(condition ~ stimulus, labeller=label_both) +
+  mutate(
+    .true = response_probabilities(m$data$N[first(condition), ]),
+    .category = as.integer(.category),
+    condition = factor(condition),
+    joint_response = factor((.category - 1) %% (n_distinct(d$confidence) * 2) + 1),
+    stimulus = factor(as.integer(.category > n_distinct(d$confidence) * 2))
+  ) |>
+  ggplot(aes(x = joint_response, fill = condition)) +
+  geom_col(aes(y = .true)) +
+  geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
+  facet_wrap(condition ~ stimulus, labeller = label_both) +
   theme_classic(18)
 ```
 

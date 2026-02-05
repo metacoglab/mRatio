@@ -19,7 +19,7 @@ to_unsigned <- function(x) as.numeric(x > 0)
 #' @param K maximum confidence level
 #' @export
 joint_response <- function(response, confidence, K) {
-  ifelse(response, confidence+K, K+1-confidence)
+  ifelse(response, confidence + K, K + 1 - confidence)
 }
 
 #' For a vector of counts of joint type 1/type 2 responses,
@@ -28,12 +28,15 @@ joint_response <- function(response, confidence, K) {
 #' @returns A vector of response probabilities
 #' @export
 response_probabilities <- function(x) {
-  if ((length(x) %% 4) != 0)
-    stop(paste0('Length of response counts should be divisible by 4, but is: ', length(x)))
+  if ((length(x) %% 4) != 0) {
+    stop(paste0("Length of response counts should be divisible by 4, but is: ", length(x)))
+  }
   L <- length(x) / 2
 
-  c(x[1:L] / sum(x[1:L]),
-    x[(L+1):(2*L)] / sum(x[(L+1):(2*L)]))
+  c(
+    x[1:L] / sum(x[1:L]),
+    x[(L + 1):(2 * L)] / sum(x[(L + 1):(2 * L)])
+  )
 }
 
 #' Aggregate `data` by columns `response`, `confidence`,
@@ -52,49 +55,73 @@ response_probabilities <- function(x) {
 #'  N(stimulus==1, confidence==K), ..., N(stimulus==1, confidence==1),
 #'  N(stimulus==1, confidence==1), ..., N(stimulus==1, confidence==K)]`
 #' @export
-metad_aggregate <- function(data, ..., .response='N', K=NULL) {
+metad_aggregate <- function(data, ..., .response = "N", K = NULL) {
   # number of confidence levels
-  if (is.null(K))
+  if (is.null(K)) {
     K <- n_distinct(data$confidence)
+  }
 
   ## aggregate data if non-empty
   if (nrow(data) == 0) {
-    data <- tidyr::expand_grid(..., stimulus=0:1, response=0:1, confidence=1:K) |>
-      mutate(joint_response=factor(joint_response(.data$response,
-                                                  .data$confidence,
-                                                  K)),
-             n=0) |>
-      select(-'response', -'confidence') |>
+    data <- tidyr::expand_grid(..., stimulus = 0:1, response = 0:1, confidence = 1:K) |>
+      mutate(
+        joint_response = factor(joint_response(
+          .data$response,
+          .data$confidence,
+          K
+        )),
+        n = 0
+      ) |>
+      select(-"response", -"confidence") |>
       arrange(..., .data$stimulus, .data$joint_response)
   } else {
     data <- data |>
-      mutate(response=as.integer(as.character(.data$response)),
-                    confidence=as.integer(as.character(.data$confidence)),
-                    joint_response=factor(joint_response(.data$response,
-                                                         .data$confidence, K),
-                                          levels=1:(2*K)),
-                    stimulus=factor(.data$stimulus),
-                    across(c(...), factor)) |>
+      mutate(
+        response = as.integer(as.character(.data$response)),
+        confidence = as.integer(as.character(.data$confidence)),
+        joint_response = factor(
+          joint_response(
+            .data$response,
+            .data$confidence, K
+          ),
+          levels = 1:(2 * K)
+        ),
+        stimulus = factor(.data$stimulus),
+        across(c(...), factor)
+      ) |>
       group_by(...) |>
-      count(.data$stimulus, .data$joint_response, .drop=FALSE)
+      count(.data$stimulus, .data$joint_response, .drop = FALSE)
   }
 
   data <- data |>
-    tidyr::pivot_wider(names_from=c('stimulus', 'joint_response'),
-                       values_from='n',
-                       names_prefix=glue::glue('{.response}_')) |>
-    mutate('{.response}_0' := sum(c_across(starts_with(glue::glue('{.response}_0_'),
-                                                       ignore.case=FALSE))),
-           '{.response}_1' := sum(c_across(starts_with(glue::glue('{.response}_1_'),
-                                                       ignore.case=FALSE))))
+    tidyr::pivot_wider(
+      names_from = c("stimulus", "joint_response"),
+      values_from = "n",
+      names_prefix = glue::glue("{.response}_")
+    ) |>
+    mutate(
+      "{.response}_0" := sum(c_across(starts_with(glue::glue("{.response}_0_"),
+        ignore.case = FALSE
+      ))),
+      "{.response}_1" := sum(c_across(starts_with(glue::glue("{.response}_1_"),
+        ignore.case = FALSE
+      )))
+    )
   # convert counts into a matrix-column
-  tibble(select(data, ...,
-                all_of(c(glue::glue('{.response}_0'),
-                         glue::glue('{.response}_1')))),
-         '{.response}' := data |> ungroup() |>
-           select(matches(glue::glue('{.response}_([[:digit:]]+)_([[:digit:]]+)'),
-                          ignore.case=FALSE)) |>
-           as.matrix())
+  tibble(
+    select(
+      data, ...,
+      all_of(c(
+        glue::glue("{.response}_0"),
+        glue::glue("{.response}_1")
+      ))
+    ),
+    "{.response}" := data |> ungroup() |>
+      select(matches(glue::glue("{.response}_([[:digit:]]+)_([[:digit:]]+)"),
+        ignore.case = FALSE
+      )) |>
+      as.matrix()
+  )
 }
 
 #' Fit the metad' model using the `brms` package
@@ -114,39 +141,48 @@ metad_aggregate <- function(data, ..., .response='N', K=NULL) {
 #' @param stanvars Additional `stanvars` to pass to the model code, for example to define an alternative
 #' distribution or a custom model prior.
 #' @export
-fit_metad <- function(formula, data, ..., aggregate=TRUE, K=NULL,
-                      distribution='normal', metac_absolute=TRUE, stanvars=NULL) {
+fit_metad <- function(formula, data, ..., aggregate = TRUE, K = NULL,
+                      distribution = "normal", metac_absolute = TRUE, stanvars = NULL) {
   data.aggregated <- NULL
 
   # determine response variable
-  .response <- all.vars(formula$formula)[attr(terms(formula$formula), 'response')]
+  .response <- all.vars(formula$formula)[attr(terms(formula$formula), "response")]
 
   # aggregate data by formula terms
   if (aggregate) {
-    if (is.null(K))
+    if (is.null(K)) {
       K <- n_distinct(data$confidence)
+    }
 
     # get a list of variables by which to aggregate
-    terms <- all.vars(brms::brmsterms(brms::bf(formula, family=metad(K)))$allvars)
-    terms <- syms(terms[!(terms %in% c(.response, 'Intercept'))])
-    data.aggregated <- metad_aggregate(data, !!!terms, .response=.response)
+    terms <- all.vars(brms::brmsterms(brms::bf(formula, family = metad(K)))$allvars)
+    terms <- syms(terms[!(terms %in% c(.response, "Intercept"))])
+    data.aggregated <- metad_aggregate(data, !!!terms, .response = .response)
   } else {
-    if (is.null(K))
+    if (is.null(K)) {
       K <- ncol(pull(data, .response)) / 4
+    }
     data.aggregated <- data
   }
 
-  if (K < 2)
-    stop(glue::glue('Error: must have at least one confidence level (found {{K}}).'))
+  if (K < 2) {
+    stop(glue::glue("Error: must have at least one confidence level (found {{K}})."))
+  }
 
   # add metad stanvars to any user-defined stanvars
-  sv <- brms::stanvar(scode=metad_stancode(K, distribution=distribution,
-                                           metac_absolute=metac_absolute),
-                      block='functions')
-  if (!is.null(stanvars))
+  sv <- brms::stanvar(
+    scode = metad_stancode(K,
+      distribution = distribution,
+      metac_absolute = metac_absolute
+    ),
+    block = "functions"
+  )
+  if (!is.null(stanvars)) {
     sv <- sv + stanvars
+  }
 
   brms::brm(formula, data.aggregated,
-            family=metad(K, distribution=distribution, metac_absolute=metac_absolute),
-            stanvars=sv, ...)
+    family = metad(K, distribution = distribution, metac_absolute = metac_absolute),
+    stanvars = sv, ...
+  )
 }

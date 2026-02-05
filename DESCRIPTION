@@ -1,0 +1,32 @@
+Package: mRatio
+Title: Fit the meta-d' model of confidence ratings using `brms`
+Version: 0.0.1
+Authors@R: 
+    person("Kevin", "O'Neill", , "kevin.o'neill@ucl.ac.uk", role = c("aut", "cre"))
+Description: Implementation of a `brms` custom family for the meta-d\'
+    model (Maniscalco & Lau, 2012).
+License: GPL (>= 3) + file LICENSE
+Depends: 
+    R (>= 4.2.0)
+Imports: 
+    abind (>= 1.4.8),
+    brms (>= 2.23.0),
+    dplyr (>= 1.2.0),
+    glue (>= 1.8.0),
+    mvtnorm (>= 1.3.3),
+    rlang (>= 1.1.7),
+    stats,
+    stringr (>= 1.6.0),
+    tidybayes (>= 3.0.7),
+    tidyr (>= 1.3.2)
+Suggests: 
+    cmdstanr (>= 0.9.0),
+    knitr,
+    purrr (>= 1.2.1),
+    rmarkdown,
+    tidyverse (>= 2.0.0)
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3

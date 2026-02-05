@@ -1,0 +1,8 @@
+.Rproj.user
+mRatio.Rproj
+.Rhistory
+.RData
+.httr-oauth
+.DS_Store
+.quarto
+inst/doc

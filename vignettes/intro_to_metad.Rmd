@@ -1,0 +1,134 @@
+---
+title: "intro_to_metad"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{intro_to_metad}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tidyverse)
+library(brms)
+library(tidybayes)
+library(mRatio)
+```
+
+
+```{r}
+d <- sim_metad(N_trials=1000000, d_prime=.75, c=-.5, log_M=-1,
+               c2_0=c(.25, .75, 1), c2_1=c(.5, 1, 1.25))
+
+m <- fit_metad(bf(N ~ 0 + Intercept), data=d,
+               cores=4, backend='cmdstanr',
+               prior=prior(normal(0, 1)) +
+                 prior(normal(0, 1), class=dprime) +
+                 prior(normal(0, 1), class=c) +
+                 prior(lognormal(0, 1), class=metac2zero1diff) +
+                 prior(lognormal(0, 1), class=metac2zero2diff) +
+                 prior(lognormal(0, 1), class=metac2one1diff) +
+                 prior(lognormal(0, 1), class=metac2one2diff))
+summary(m, prior=TRUE)
+```
+
+```{r parameters}
+tibble(.row=1) |>
+  add_linpred_draws(m, dpar=TRUE, transform=TRUE) |>
+  pivot_longer(.linpred:metac2one3diff, names_to='.variable', values_to='.value') |>
+  group_by(.variable, .add=TRUE) |>
+  median_qi()
+```
+
+```{r post_pred}
+## posterior predictions (counts of type 1/type 2 responses)
+predicted_draws(m, metad_aggregate(d)) |>
+  group_by(.row, .category) |>
+  median_qi(.prediction) |>
+  mutate(N=as.integer(m$data$N)) |>
+  separate(.category, into=c('var', 'stimulus', 'joint_response'),
+           sep='_', convert=TRUE) |>
+  mutate(response=factor(as.integer(joint_response > max(joint_response)/2)),
+         confidence=factor(ifelse(joint_response > max(joint_response)/2,
+                                  joint_response-max(joint_response)/2,
+                                  max(joint_response)/2 - joint_response + 1)))|>
+  ggplot(aes(x=joint_response)) +
+  geom_col(aes(y=N, fill=response, alpha=confidence), ) +
+  geom_pointrange(aes(y=.prediction, ymin=.lower, ymax=.upper)) +
+  scale_alpha_discrete(range=c(.25, 1)) +
+  facet_wrap(~ stimulus, labeller=label_both) +
+  theme_classic(18)
+```
+
+```{r epred}
+## posterior predictions (probabilities of type 1/type 2 responses)
+epred_draws(m, newdata=tibble(.row=1)) |>
+  group_by(.row, .category) |>
+  median_qi(.epred) |>
+  mutate(.true=response_probabilities(m$data$N[1,])) |>
+  separate(.category, into=c('var', 'stimulus', 'joint_response'), sep='_', convert=TRUE) |>
+  mutate(response=factor(as.integer(joint_response > max(joint_response)/2)),
+         confidence=factor(ifelse(joint_response > max(joint_response)/2,
+                                  joint_response-max(joint_response)/2,
+                                  max(joint_response)/2 - joint_response + 1))) |>
+  ggplot(aes(x=joint_response)) +
+  geom_col(aes(y=.true, fill=response, alpha=confidence), ) +
+  geom_pointrange(aes(y=.epred, ymin=.lower, ymax=.upper)) +
+  scale_alpha_discrete(range=c(.25, 1)) +
+  facet_wrap(~ stimulus, labeller=label_both) +
+  theme_classic(18)
+```
+
+```{r mean_confidence}
+## calculate mean confidence per stimulus
+tibble(.row=1) |>
+  add_mean_confidence_draws(m) |>
+  median_qi(.epred) |>
+  left_join(d |>
+              group_by(stimulus, response, confidence) |>
+              summarize(theta_2=first(theta_2)) |>
+              group_by(stimulus, response) |>
+              summarize(.true=sum(theta_2 * confidence)))
+```
+
+```{r roc1}
+# psuedo type-1 ROC
+tibble(.row=1) |>
+  add_roc1_draws(m, bounds=FALSE) |>
+  median_qi(p_fa, p_hit) |>
+  ggplot(aes(x=p_fa, xmin=p_fa.lower, xmax=p_fa.upper,
+             y=p_hit, ymin=p_hit.lower, ymax=p_hit.upper)) +
+  geom_abline(slope=1, intercept=0, linetype='dashed') +
+  geom_errorbar(orientation='y', width=.01) +
+  geom_errorbar(orientation='x', width=.01) +
+  geom_line() +
+  coord_fixed(xlim=0:1, ylim=0:1, expand=FALSE) +
+  xlab('P(False Alarm)') + ylab('P(Hit)') +
+  theme_bw(18)
+```
+
+```{r roc2}
+# type 2 ROC
+tibble(.row=1) |>
+  add_roc2_draws(m, bounds=TRUE) |>
+  median_qi(p_hit2, p_fa2) |>
+  mutate(response=factor(response)) |>
+  ggplot(aes(x=p_fa2, xmin=p_fa2.lower, xmax=p_fa2.upper,
+             y=p_hit2, ymin=p_hit2.lower, ymax=p_hit2.upper,
+             color=response)) +
+  geom_abline(slope=1, intercept=0, linetype='dashed') +
+  geom_errorbar(orientation='y', width=.01) +
+  geom_errorbar(orientation='x', width=.01) +
+  geom_line() +
+  coord_fixed(xlim=0:1, ylim=0:1, expand=FALSE) +
+  xlab('P(Type 2 False Alarm)') + ylab('P(Type 2 Hit)') +
+  theme_bw(18)
+```
+
+

@@ -8,6 +8,13 @@
 \description{
 Implementation of a `brms` custom family for the meta-d\' model (Maniscalco & Lau, 2012).
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://metacoglab.github.io/mRatio/}
+}
+
+}
 \author{
 \strong{Maintainer}: Kevin O'Neill \email{kevin.o'neill@ucl.ac.uk}
 

@@ -1,0 +1,9 @@
+pandoc: 3.1.11
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  intro_to_metad: intro_to_metad.html
+last_built: 2026-02-06T18:10Z
+urls:
+  reference: https://metacoglab.github.io/mRatio/reference
+  article: https://metacoglab.github.io/mRatio/articles

@@ -3,6 +3,7 @@ template:
   bootstrap: 5
   light-switch: true
   math-rendering: katex
+  bootswatch: simplex
 
 
 reference:

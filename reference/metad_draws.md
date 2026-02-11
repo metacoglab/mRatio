@@ -92,9 +92,9 @@ m <- fit_metad(N ~ 1, sim_metad(), chains = 1, iter = 500)
 #> Chain 1: Iteration: 450 / 500 [ 90%]  (Sampling)
 #> Chain 1: Iteration: 500 / 500 [100%]  (Sampling)
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 0.032 seconds (Warm-up)
-#> Chain 1:                0.027 seconds (Sampling)
-#> Chain 1:                0.059 seconds (Total)
+#> Chain 1:  Elapsed Time: 0.03 seconds (Warm-up)
+#> Chain 1:                0.026 seconds (Sampling)
+#> Chain 1:                0.056 seconds (Total)
 #> Chain 1: 
 #> Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
 #> Running the chains for more iterations may help. See

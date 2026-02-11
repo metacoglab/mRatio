@@ -67,7 +67,15 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>The mRatio package is designed to fit the meta-d’ model for confidence ratings (<a href="#ref-maniscalco2012">Maniscalco and Lau 2012</a>, <a href="#ref-maniscalco2014">2014</a>). Like the <a href="https://github.com/metacoglab/HMeta-d" class="external-link">Hmeta-d toolbox</a> (<a href="#ref-fleming2017">Fleming 2017</a>), the mRatio package uses a Bayesian modeling approach. The mRatio package builds on the Hmeta-d toolbox through implementation as a custom family in the <a href="https://paulbuerkner.com/brms/" class="external-link">brms</a> package, which itself provides a friendly interface to the probabilistic programming language <a href="https://mc-stan.org" class="external-link">Stan</a>. This provides major benefits: * Model designs can be specified as simple <code>R</code> formulas * Support for complex model designs (e.g., multilevel models, distributional models) * Interfaces to other packages surrounding <code>brms</code> (e.g., <code>tidybayes</code>, <code>ggdist</code>, <code>bayesplot</code>, <code>loo</code>, <code>posterior</code>, <code>bridgesampling</code>) * Computation of model-implied quantities (e.g., mean confidence, type 1 and type 2 receiver operating characteristic curves, metacognitive bias) * Increased sampling efficiency and better convergence diagnostics</p>
+<p>The mRatio package is designed to fit the meta-d’ model for confidence ratings (<a href="#ref-maniscalco2012">Maniscalco and Lau 2012</a>, <a href="#ref-maniscalco2014">2014</a>). Like the <a href="https://github.com/metacoglab/HMeta-d" class="external-link">Hmeta-d toolbox</a> (<a href="#ref-fleming2017">Fleming 2017</a>), the mRatio package uses a Bayesian modeling approach. The mRatio package builds on the Hmeta-d toolbox through implementation as a custom family in the <a href="https://paulbuerkner.com/brms/" class="external-link">brms</a> package, which itself provides a friendly interface to the probabilistic programming language <a href="https://mc-stan.org" class="external-link">Stan</a>.</p>
+<p>This provides major benefits:</p>
+<ul>
+<li>Model designs can be specified as simple <code>R</code> formulas</li>
+<li>Support for complex model designs (e.g., multilevel models, distributional models)</li>
+<li>Interfaces to other packages surrounding <code>brms</code> (e.g., <code>tidybayes</code>, <code>ggdist</code>, <code>bayesplot</code>, <code>loo</code>, <code>posterior</code>, <code>bridgesampling</code>)</li>
+<li>Computation of model-implied quantities (e.g., mean confidence, type 1 and type 2 receiver operating characteristic curves, metacognitive bias)</li>
+<li>Increased sampling efficiency and better convergence diagnostics</li>
+</ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -83,16 +91,16 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,000 × 5</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt;    trial stimulus response correct confidence</span></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt;    &lt;int&gt;    &lt;int&gt;    &lt;int&gt;   &lt;int&gt;      &lt;int&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;  1     1        1        0       0          1</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;  1     1        0        0       1          4</span></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;  2     2        0        0       1          3</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;  3     3        1        1       1          3</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;  4     4        0        0       1          3</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt;  5     5        1        0       0          1</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;  6     6        1        1       1          2</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;  7     7        0        1       0          1</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;  8     8        0        0       1          4</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt;  9     9        0        0       1          1</span></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; 10    10        0        1       0          4</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;  3     3        1        0       0          1</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;  4     4        0        0       1          2</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt;  5     5        1        1       1          3</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;  6     6        0        1       0          1</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;  7     7        0        0       1          2</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;  8     8        0        1       0          1</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt;  9     9        1        0       0          3</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; 10    10        1        1       1          3</span></span>
 <span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; # ℹ 990 more rows</span></span></code></pre></div>
 <p>You can fit an intercepts-only meta-d’ model using <code>fit_metad</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -129,16 +137,16 @@
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; # Groups:   participant, condition [50]</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt;    participant condition trial stimulus response correct confidence</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt;          &lt;int&gt;     &lt;int&gt; &lt;int&gt;    &lt;int&gt;    &lt;int&gt;   &lt;int&gt;      &lt;int&gt;</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;  1           1         1     1        0        0       1          4</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt;  2           1         1     2        0        0       1          2</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt;  3           1         1     3        1        1       1          4</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;  4           1         1     4        0        0       1          4</span></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;  5           1         1     5        1        0       0          3</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;  6           1         1     6        0        0       1          2</span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;  7           1         1     7        0        0       1          4</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt;  8           1         1     8        0        0       1          4</span></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;  9           1         1     9        0        0       1          4</span></span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 10           1         1    10        1        0       0          3</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;  1           1         1     1        0        0       1          3</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt;  2           1         1     2        1        1       1          3</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt;  3           1         1     3        1        1       1          3</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;  4           1         1     4        0        1       0          1</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;  5           1         1     5        1        1       1          2</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;  6           1         1     6        1        1       1          3</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;  7           1         1     7        1        0       0          3</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt;  8           1         1     8        0        0       1          2</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;  9           1         1     9        1        1       1          4</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 10           1         1    10        0        0       1          4</span></span>
 <span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; # ℹ 4,990 more rows</span></span></code></pre></div>
 <p>To account for the repeated measures in this design, you can simply adjust the formula to include participant-level effects:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">

@@ -11,8 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  dpi = 150, fig.width=8, fig.height=6, 
-  fig.align='center', out.width = "75%"
+  dpi = 150, fig.width = 8, fig.height = 6,
+  fig.align = "center", out.width = "75%"
 )
 ```
 
@@ -54,8 +54,9 @@ One hiccup is that some paradigms do not collect a separate decision (i.e., type
 If you would like to convert the joint response into separate type 1 and type 2 responses, you can use the corresponding functions `type1_response` and `type2_response`. For example, if instead we had a dataset that looked like this:
 
 ```{r joint_response, echo=FALSE}
-d.joint_response <- d |> ungroup() |>
-  mutate(joint_response=joint_response(response, confidence, max(confidence))) |>
+d.joint_response <- d |>
+  ungroup() |>
+  mutate(joint_response = joint_response(response, confidence, max(confidence))) |>
   select(trial, joint_response)
 d.joint_response
 ```
@@ -63,14 +64,16 @@ d.joint_response
 Then we could convert our joint response like so:
 ```{r convert_joint_response}
 d.joint_response |>
-  mutate(response=type1_response(joint_response, K=4),
-         confidence=type2_response(joint_response, K=4))
+  mutate(
+    response = type1_response(joint_response, K = 4),
+    confidence = type2_response(joint_response, K = 4)
+  )
 ```
 
 Similarly, you can also convert the separate responses into a joint response:
 ```{r convert_separate_responses}
 d |>
-  mutate(joint_response=joint_response(response, confidence, K=4))
+  mutate(joint_response = joint_response(response, confidence, K = 4))
 ```
 
 Note that in both cases we need to specify that our confidence scale has `K=4` levels (meaning that our joint type 1/type 2 scale has `8` levels).
@@ -99,17 +102,17 @@ d.summary <- aggregate_metad(d)
 d.summary
 ```
 
-The resulting dataframe has three columns: `N_0` is the number of trials with `stimulus==0`, `N_1` is the number of trials with `stimulus==1`, and `N` is a matrix containing the number of joint responses for each of the two possible stimuli (with column names indicating the `stimulus` and `joint_response`).
+The resulting data frame has three columns: `N_0` is the number of trials with `stimulus==0`, `N_1` is the number of trials with `stimulus==1`, and `N` is a matrix containing the number of joint responses for each of the two possible stimuli (with column names indicating the `stimulus` and `joint_response`).
 
 If you would like to use variable name other than `N` for the counts, you can change the name with the `.response` argument:
 ```{r aggregate_metad_response}
-aggregate_metad(d, .response='y')
+aggregate_metad(d, .response = "y")
 ```
 
 
 Finally, if you have other columns in your dataset (e.g., `participant` or `condition` columns) that you would like to be aggregated separately, you can simply add them to the function call:
 ```{r aggregate_condition, eval=FALSE}
-aggregate_metad(d, participant condition)
+aggregate_metad(d, participant, condition)
 ```
 
 
@@ -144,29 +147,28 @@ Once we have our fitted model, there are many estimates that we can extract from
 
 
 ### Parameter estimates
-First, it is often useful to extract the posterior draws of the model parameters. Here we can use `tidybayes::linpred_draws` (with arguments `dpar=TRUE` and `transform=TRUE` to extract the estimates of all model parameters on their true scale):
+First, it is often useful to extract the posterior draws of the model parameters, which we can do with `metad_draws`:
 ```{r parameters}
-draws.linpred <- tibble(.row = 1) |>
-  add_linpred_draws(m, dpar = TRUE, transform = TRUE) 
+draws.metad <- tibble(.row = 1) |>
+  add_metad_draws(m)
 ```
 
 ```{r, echo=FALSE}
-print(draws.linpred)
+print(draws.metad)
 ```
-This `tibble` has a separate row for every posterior sample and a separate column for every model parameter (`.linpred` and `mu` both representing $M\textrm{-ratio}$). This format is useful for some purposes, but it will often be useful to pivot it so that we have a separate row for each model parameter and posterior sample:
+This `tibble` has a separate row for every posterior sample and a separate column for every model parameter. This format is useful for some purposes, but it will often be useful to pivot it so that we have a separate row for each model parameter and posterior sample:
 ```{r}
-draws.linpred <- draws.linpred |>
-  pivot_longer(.linpred:metac2one3diff, names_to = ".variable", values_to = ".value")
+draws.metad <- tibble(.row = 1) |>
+  add_metad_draws(m, pivot_longer=TRUE)
 ```
 
 ```{r, echo=FALSE}
-print(draws.linpred)
+print(draws.metad)
 ```
 Now that all of the posterior samples are stored in a single column `.value`, it is easy to get posterior summaries using e.g. `tidybayes::median_qi`:
 ```{r}
-draws.linpred |>
-  group_by(.variable) |>
-  median_qi(.value)
+draws.metad |>
+  median_qi()
 ```
 
 
@@ -180,7 +182,7 @@ draws.predicted <- predicted_draws(m, d.summary)
 draws.predicted
 ```
 
-In this dataframe, we have all of the columns from our aggregated data `d.summary` as well as `.category` (indicating the simulated stimulus and joint response) and `.prediction` (indicating the number of simulated trials per stimulus and joint response). To make this format easier to manage, we can pull the relevant information out of `.category`:
+In this data frame, we have all of the columns from our aggregated data `d.summary` as well as `.category` (indicating the simulated stimulus and joint response) and `.prediction` (indicating the number of simulated trials per stimulus and joint response). To make this format easier to manage, we can pull the relevant information out of `.category`:
 ```{r post_pred2}
 draws.predicted <- draws.predicted |>
   ungroup() |>
@@ -189,8 +191,8 @@ draws.predicted <- draws.predicted |>
     sep = "_", convert = TRUE
   ) |>
   mutate(
-    response = factor(type1_response(joint_response, K=4)),
-    confidence = factor(type2_response(joint_response, K=4))
+    response = factor(type1_response(joint_response, K = 4)),
+    confidence = factor(type2_response(joint_response, K = 4))
   )
 ```
 
@@ -204,9 +206,9 @@ draws.predicted |>
   group_by(.row, stimulus, joint_response, response, confidence) |>
   median_qi(.prediction) |>
   group_by(.row) |>
-  mutate(N=t(d.summary$N[.row,])) |>
+  mutate(N = t(d.summary$N[.row, ])) |>
   ggplot(aes(x = joint_response)) +
-  geom_col(aes(y = N), fill='grey80') +
+  geom_col(aes(y = N), fill = "grey80") +
   geom_pointrange(aes(y = .prediction, ymin = .lower, ymax = .upper)) +
   facet_wrap(~stimulus, labeller = label_both) +
   theme_classic(18)
@@ -219,8 +221,8 @@ Usually it will be simpler to compare response probabilities rather than raw res
 draws.epred <- epred_draws(m, newdata = tibble(.row = 1)) |>
   separate(.category, into = c("var", "stimulus", "joint_response"), sep = "_", convert = TRUE) |>
   mutate(
-    response = factor(type1_response(joint_response, K=4)),
-    confidence = factor(type2_response(joint_response, K=4))
+    response = factor(type1_response(joint_response, K = 4)),
+    confidence = factor(type2_response(joint_response, K = 4))
   )
 ```
 
@@ -233,9 +235,9 @@ draws.epred |>
   group_by(.row, stimulus, joint_response, response, confidence) |>
   median_qi(.epred) |>
   group_by(.row) |>
-  mutate(.true=t(response_probabilities(d.summary$N[.row,]))) |>
+  mutate(.true = t(response_probabilities(d.summary$N[.row, ]))) |>
   ggplot(aes(x = joint_response)) +
-  geom_col(aes(y = .true), fill='grey80') +
+  geom_col(aes(y = .true), fill = "grey80") +
   geom_pointrange(aes(y = .epred, ymin = .lower, ymax = .upper)) +
   scale_alpha_discrete(range = c(.25, 1)) +
   facet_wrap(~stimulus, labeller = label_both) +
@@ -249,39 +251,39 @@ One can also compute implied values of mean confidence from the meta-d' model us
 tibble(.row = 1) |>
   add_mean_confidence_draws(m) |>
   median_qi(.epred) |>
-  left_join(d |> 
-              group_by(stimulus, response) |>
-              summarize(.true=mean(confidence)))
+  left_join(d |>
+    group_by(stimulus, response) |>
+    summarize(.true = mean(confidence)))
 ```
 Here, `.epred` refers to the model-estimated mean confidence per stimulus and response, and `.true` is the empirical mean confidence.
 
 In addition, we can compute mean confidence marginalizing over stimuli:
 ```{r mean_confidence2}
 tibble(.row = 1) |>
-  add_mean_confidence_draws(m, by_stimulus=FALSE) |>
+  add_mean_confidence_draws(m, by_stimulus = FALSE) |>
   median_qi(.epred) |>
-  left_join(d |> 
-              group_by(response) |>
-              summarize(.true=mean(confidence)))
+  left_join(d |>
+    group_by(response) |>
+    summarize(.true = mean(confidence)))
 ```
 over responses:
 ```{r mean_confidence3}
 tibble(.row = 1) |>
-  add_mean_confidence_draws(m, by_response=FALSE) |>
+  add_mean_confidence_draws(m, by_response = FALSE) |>
   median_qi(.epred) |>
-  left_join(d |> 
-              group_by(stimulus) |>
-              summarize(.true=mean(confidence)))
+  left_join(d |>
+    group_by(stimulus) |>
+    summarize(.true = mean(confidence)))
 ```
 
 or both over stimuli and responses:
 ```{r mean_confidence4}
 tibble(.row = 1) |>
-  add_mean_confidence_draws(m, by_stimulus=FALSE, by_response=FALSE) |>
+  add_mean_confidence_draws(m, by_stimulus = FALSE, by_response = FALSE) |>
   median_qi(.epred) |>
-  bind_cols(d |> 
-              ungroup() |>
-              summarize(.true=mean(confidence)))
+  bind_cols(d |>
+    ungroup() |>
+    summarize(.true = mean(confidence)))
 ```
 
 ### Metacognitive bias
@@ -291,7 +293,7 @@ $\textrm{meta-}\Delta$ can be interpreted as lying between two extremes: when $\
 
 To obtain estimates of $\textrm{meta-}\Delta$, one can use the function `metacognitive_bias_draws`:
 ```{r metacognitive_bias_draws}
-tibble(.row=1) |>
+tibble(.row = 1) |>
   add_metacognitive_bias_draws(m) |>
   median_qi()
 ```
@@ -311,7 +313,7 @@ draws.roc1 <- tibble(.row = 1) |>
 draws.roc1
 ```
 
-Again, we have a tidy tibble with columns `.chain`, `.iteration`, and `.draw` identifying individual posterior samples, `joint_response`, `response`, and `confidence` identifying the different points on the ROC, and `.row` identifying different ROCs (since our dataframe has only one row, here there is only one ROC). In addition, we also have `p_hit` and `p_fa`, which contain posterior estimates of type 1 hit rate (i.e., the probability of a `"1"` response with `confidence >= c` given `stimulus==1`) and type 1 false alarm rate (i.e., the probability of a `"1"` response with `confidence >= c` given `stimulus==0`).
+Again, we have a tidy tibble with columns `.chain`, `.iteration`, and `.draw` identifying individual posterior samples, `joint_response`, `response`, and `confidence` identifying the different points on the ROC, and `.row` identifying different ROCs (since our data frame has only one row, here there is only one ROC). In addition, we also have `p_hit` and `p_fa`, which contain posterior estimates of type 1 hit rate (i.e., the probability of a `"1"` response with `confidence >= c` given `stimulus==1`) and type 1 false alarm rate (i.e., the probability of a `"1"` response with `confidence >= c` given `stimulus==0`).
 
 For visualization, we can get posterior summaries of the ROC using `tidybayes::median_qi` and then simply plot as a line:
 ```{r roc1}
@@ -335,7 +337,7 @@ draws.roc1 |>
 Finally, to plot type 2 performance as a type 2 ROC, we can use `add_roc2_draws`:
 ```{r roc2}
 draws.roc2 <- tibble(.row = 1) |>
-    add_roc2_draws(m)
+  add_roc2_draws(m)
 ```
 
 ```{r echo=FALSE}

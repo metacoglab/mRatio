@@ -3,11 +3,17 @@
 \name{roc2_draws}
 \alias{roc2_draws}
 \alias{add_roc2_draws}
+\alias{roc2_rvars}
+\alias{add_roc2_rvars}
 \title{Obtain posterior draws of the response-specific type 2 receiver operating characteristic (ROC) curves.}
 \usage{
 roc2_draws(object, newdata, ..., bounds = FALSE)
 
 add_roc2_draws(newdata, object, ...)
+
+roc2_rvars(object, newdata, ..., bounds = FALSE)
+
+add_roc2_rvars(newdata, object, ...)
 }
 \arguments{
 \item{object}{The \code{brms} model with the \code{metad} family}
@@ -24,8 +30,7 @@ a tibble containing posterior draws of the pseudo type 1 ROC with the following
 columns:
 \itemize{
 \item \code{.row}: the row of \code{newdata}
-\item \code{.chain}, \code{.iteration}, \code{.draw}: identifiers for the posterior sample
-\item \code{joint_response}: the combined type 1 / type 2 response (\eqn{J \in [1, 2K]}) for \eqn{K} confidence levels)
+\item \code{.chain}, \code{.iteration}, \code{.draw}: for \code{roc2_draws} and \code{add_roc2_draws}, identifiers for the posterior sample
 \item \code{response}: the type 1 response for perceived stimulus presence (\eqn{R \in \{0, 1\}})
 \item \code{confidence}: the type 2 confidence response (\eqn{C \in [1, K]})
 \item \code{p_fa2}: the cumulative probability of an incorrect response (\eqn{P(C\ge c \;\vert\; R\ne S)})
@@ -33,7 +38,12 @@ columns:
 }
 }
 \description{
-Obtain posterior draws of the response-specific type 2 receiver operating characteristic (ROC) curves.
+Given a data frame and a meta-d' model, adds estimates of the
+cumulative probability over confidence for each type 1 response.
+For \code{roc2_draws} and \code{add_roc2_draws}, estimates are returned in a tidy
+tibble with one row per posterior draw and per joint response.
+For \code{roc2_rvars} and \code{add_roc2_rvars}, parameters are returned as
+\code{posterior::rvar}s, with one row per row in \code{newdata} and per joint response.
 }
 \examples{
 # running few iterations so example runs quickly, use more in practice
@@ -43,6 +53,10 @@ newdata <- tidyr::tibble(.row = 1)
 # compute type 2 ROC curve
 roc2_draws(m, newdata)
 add_roc2_draws(newdata, m)
+
+# use posterior::rvar for additional efficiency
+roc2_rvars(m, newdata)
+add_roc2_rvars(newdata, m)
 
 # include the ROC bounds
 roc2_draws(m, newdata, bounds = TRUE)

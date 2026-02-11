@@ -3,47 +3,64 @@
 \name{metacognitive_bias_draws}
 \alias{metacognitive_bias_draws}
 \alias{add_metacognitive_bias_draws}
+\alias{metacognitive_bias_rvars}
+\alias{add_metacognitive_bias_rvars}
 \title{Obtain posterior draws of an index of metacognitive bias}
 \usage{
 metacognitive_bias_draws(object, newdata, ..., by_response = TRUE)
 
 add_metacognitive_bias_draws(newdata, object, ...)
+
+metacognitive_bias_rvars(object, newdata, ..., by_response = TRUE)
+
+add_metacognitive_bias_rvars(newdata, object, ...)
 }
 \arguments{
 \item{object}{The \code{brms} model with the \code{metad} family}
 
 \item{newdata}{A data frame from which to generate posterior predictions}
 
-\item{...}{Additional parameters passed to \link[tidybayes:add_predicted_draws]{tidybayes::epred_draws}}
+\item{...}{Additional parameters passed to \link[tidybayes:add_predicted_draws]{tidybayes::epred_draws} or \link[tidybayes:add_predicted_rvars]{tidybayes::epred_rvars}}
 
 \item{by_response}{If \code{TRUE}, compute metacognitive bias separately for the
-two type 1 responses. If \code{FALSE}, compute an un-weighted average of the two measures.}
+two type 1 responses. If \code{FALSE}, compute an un-weighted average of the two
+measures.}
 }
 \value{
-a tibble containing posterior draws of  with the following
-columns:
+a tibble containing posterior draws of \eqn{\textrm{meta-}\Delta}
+with the following columns:
 \itemize{
 \item \code{.row}: the row of \code{newdata}
-\item \code{.chain}, \code{.iteration}, \code{.draw}: identifiers for the posterior sample
+\item \code{.chain}, \code{.iteration}, \code{.draw}: for \code{metacognitive_bias_draws} and \code{add_metacognitive_bias_draws}, identifiers for the posterior sample
 \item \code{response}: the type 1 response for perceived stimulus presence
 \item \code{metacognitive_bias}: the distance between \code{meta_c} and the average of
 the confidence criteria \verb{meta_c2_\{response\}}.
 }
 }
 \description{
-Computes \eqn{\textrm{meta-}\Delta}, an index of metacognitive bias.
-\eqn{\textrm{meta-}\Delta} is the distance between \code{meta_c} and the
-average of the the confidence criteria \code{meta_c2_0} and \code{meta_c2_1}.
+Computes \eqn{\textrm{meta-}\Delta}, an index of metacognitive
+bias. \eqn{\textrm{meta-}\Delta} is the distance between \code{meta_c} and the
+average of the the confidence criteria \code{meta_c2_0} and \code{meta_c2_1}. For
+\code{metacognitive_bias_draws} and \code{add_metacognitive_bias_draws}, parameters
+are returned in a tidy tibble with one row per posterior draw and per
+response. For \code{metacognitive_bias_rvars} and
+\code{add_metacognitive_bias_rvars}, parameters are returned as
+\link[posterior:rvar]{posterior::rvar}s, with one row per row in \code{newdata} and per response.
 }
 \examples{
 # running few iterations so example runs quickly, use more in practice
 m <- fit_metad(N ~ 1, sim_metad(), chains = 1, iter = 500)
 newdata <- tidyr::tibble(.row = 1)
 
-# compute pseudo-type 1 ROC curve
+# compute metacognitive bias
 metacognitive_bias_draws(m, newdata)
 add_metacognitive_bias_draws(newdata, m)
 
+# use posterior::rvar for increased efficiency
+metacognitive_bias_rvars(m, newdata)
+add_metacognitive_bias_rvars(newdata, m)
+
 # average over the two type 1 responses
 metacognitive_bias_draws(m, newdata, by_response = FALSE)
+metacognitive_bias_rvars(m, newdata, by_response = FALSE)
 }

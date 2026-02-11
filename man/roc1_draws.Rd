@@ -3,18 +3,24 @@
 \name{roc1_draws}
 \alias{roc1_draws}
 \alias{add_roc1_draws}
+\alias{roc1_rvars}
+\alias{add_roc1_rvars}
 \title{Obtain posterior draws of the pseudo type 1 receiver operating characteristic (ROC) curve.}
 \usage{
 roc1_draws(object, newdata, ..., bounds = FALSE)
 
 add_roc1_draws(newdata, object, ...)
+
+roc1_rvars(object, newdata, ..., bounds = FALSE)
+
+add_roc1_rvars(newdata, object, ...)
 }
 \arguments{
 \item{object}{The \code{brms} model with the \code{metad} family}
 
 \item{newdata}{A data frame from which to generate posterior predictions}
 
-\item{...}{Additional parameters passed to \link[tidybayes:add_predicted_draws]{tidybayes::epred_draws}}
+\item{...}{Additional parameters passed to \link[tidybayes:add_predicted_draws]{tidybayes::epred_draws} or \link[tidybayes:add_predicted_rvars]{tidybayes::epred_rvars}}
 
 \item{bounds}{If \code{TRUE}, include the endpoints of the ROC at \eqn{(0, 0)} and \eqn{(1, 1)}.
 Otherwise, the endpoints are excluded.}
@@ -24,7 +30,7 @@ a tibble containing posterior draws of the pseudo type 1 ROC with the following
 columns:
 \itemize{
 \item \code{.row}: the row of \code{newdata}
-\item \code{.chain}, \code{.iteration}, \code{.draw}: identifiers for the posterior sample
+\item \code{.chain}, \code{.iteration}, \code{.draw}: for \code{roc1_draws} and \code{add_roc1_draws}, identifiers for the posterior sample
 \item \code{joint_response}: the combined type 1 / type 2 response (\eqn{J \in [1, 2K]}) for \eqn{K} confidence levels)
 \item \code{response}: the type 1 response for perceived stimulus presence (\eqn{R \in \{0, 1\}})
 \item \code{confidence}: the type 2 confidence response (\eqn{C \in [1, K]})
@@ -33,7 +39,12 @@ columns:
 }
 }
 \description{
-Obtain posterior draws of the pseudo type 1 receiver operating characteristic (ROC) curve.
+Given a data frame and a meta-d' model, adds estimates of the
+cumulative probability over joint_responses.
+For \code{roc1_draws} and \code{add_roc1_draws}, estimates are returned in a tidy
+tibble with one row per posterior draw and per joint response.
+For \code{roc1_rvars} and \code{add_roc1_rvars}, parameters are returned as
+\link[posterior:rvar]{posterior::rvar}s, with one row per row in \code{newdata} and per joint response.
 }
 \examples{
 # running few iterations so example runs quickly, use more in practice
@@ -42,6 +53,10 @@ newdata <- tidyr::tibble(.row = 1)
 
 # compute pseudo-type 1 ROC curve
 roc1_draws(m, newdata)
+add_roc1_draws(newdata, m)
+
+# use posterior::rvar for additional efficiency
+roc1_rvars(m, newdata)
 add_roc1_draws(newdata, m)
 
 # include the ROC bounds

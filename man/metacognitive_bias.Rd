@@ -5,10 +5,12 @@
 \title{Given the distances between successive confidence thresholds,
 calculate the average of the cumulative distances to 0.}
 \usage{
-metacognitive_bias(...)
+metacognitive_bias(..., rvar = FALSE)
 }
 \arguments{
 \item{...}{a series of distances between confidence thresholds}
+
+\item{rvar}{if \code{TRUE}, use \code{posterior::rvar_sum} in place of \code{sum}}
 }
 \description{
 Given the distances between successive confidence thresholds,

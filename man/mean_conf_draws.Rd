@@ -3,6 +3,8 @@
 \name{mean_confidence_draws}
 \alias{mean_confidence_draws}
 \alias{add_mean_confidence_draws}
+\alias{mean_confidence_rvars}
+\alias{add_mean_confidence_rvars}
 \title{Obtain posterior draws of mean confidence}
 \usage{
 mean_confidence_draws(
@@ -14,13 +16,23 @@ mean_confidence_draws(
 )
 
 add_mean_confidence_draws(newdata, object, ...)
+
+mean_confidence_rvars(
+  object,
+  newdata,
+  ...,
+  by_stimulus = TRUE,
+  by_response = TRUE
+)
+
+add_mean_confidence_rvars(newdata, object, ...)
 }
 \arguments{
 \item{object}{The \code{brms} model with the \code{metad} family}
 
 \item{newdata}{A data frame from which to generate posterior predictions}
 
-\item{...}{Additional arguments to \link[tidybayes:add_predicted_draws]{tidybayes::epred_draws}}
+\item{...}{Additional arguments to \link[tidybayes:add_predicted_draws]{tidybayes::epred_draws} or \link[tidybayes:add_predicted_rvars]{tidybayes::epred_rvars}}
 
 \item{by_stimulus}{If TRUE, predict mean confidence separately by stimulus.
 Otherwise, predict mean confidence averaging over stimuli.}
@@ -29,25 +41,29 @@ Otherwise, predict mean confidence averaging over stimuli.}
 Otherwise, predict mean confidence averaging over responses.}
 }
 \value{
-a tibble containing posterior draws of mean confidence with the following
-columns:
+a tibble containing posterior draws of mean confidence with the
+following columns:
 \itemize{
 \item \code{.row}: the row of \code{newdata}
-\item \code{.chain}, \code{.iteration}, \code{.draw}: identifiers for the posterior sample
+\item \code{.chain}, \code{.iteration}, \code{.draw}: for \code{mean_confidence_draws} and \code{add_mean_confidence_draws}, identifiers for the posterior sample
 \item \code{stimulus}: indicator for stimulus presence (if \code{by_stimulus==TRUE})
 \item \code{response}: indicator for type 1 response (if \code{by_response==TRUE})
 \item \code{.epred}: the predicted mean confidence
 }
 }
 \description{
-Computes posterior mean confidence conditional on stimulus and response
-(\eqn{\mathbb{E}[C \;\vert\; S=s,R=r]}),
-stimulus (averaging over responses, \eqn{\mathbb{E}[C \;\vert\; S=s]}),
-response (averaging over stimuli, \eqn{\mathbb{E}[C \;\vert\; R=r]}),
-or neither (averaging over stimuli and responses, \eqn{\mathbb{E}[C]}).
+Computes posterior mean confidence conditional on stimulus and
+response (\eqn{\mathbb{E}[C \;\vert\; S=s,R=r]}), stimulus (averaging over
+responses, \eqn{\mathbb{E}[C \;\vert\; S=s]}), response (averaging over
+stimuli, \eqn{\mathbb{E}[C \;\vert\; R=r]}), or neither (averaging over
+stimuli and responses, \eqn{\mathbb{E}[C]}). For \code{mean_confidence_draws}
+and \code{add_mean_confidence_draws}, estimates are returned in a tidy tibble
+with one row per posterior draw, stimulus, and response. For
+\code{mean_confidence_rvars} and \code{add_mean_confidence_rvars}, estimates are
+returned as \link[posterior:rvar]{posterior::rvar}s, with one row per row in \code{newdata}.
 
 \code{add_mean_confidence_draws} is an alias of \code{mean_confidence_draws} with
-argument order swapped
+argument order swapped.
 }
 \examples{
 # running few iterations so example runs quickly, use more in practice

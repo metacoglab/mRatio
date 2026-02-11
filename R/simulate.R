@@ -188,7 +188,7 @@ sim_metad <- function(N_trials = 100, dprime = 1, c = 0, log_M = 0,
     d |>
       tidyr::uncount(.data$n) |>
       mutate(trial = row_number()) |>
-      select(-'n') |>
+      select(-"n") |>
       relocate("trial") |>
       group_by(.data$stimulus, .data$response, .data$confidence)
   }

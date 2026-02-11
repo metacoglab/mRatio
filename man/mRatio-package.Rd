@@ -12,6 +12,8 @@ Implementation of a `brms` custom family for the meta-d\' model (Maniscalco & La
 Useful links:
 \itemize{
   \item \url{https://metacoglab.github.io/mRatio/}
+  \item \url{https://github.com/metacoglab/mRatio}
+  \item Report bugs at \url{https://github.com/metacoglab/mRatio/issues}
 }
 
 }

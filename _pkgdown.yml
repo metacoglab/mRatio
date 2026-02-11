@@ -27,14 +27,26 @@ reference:
   - title: Extracting model estimates
     desc:
     contents:
+    - metad_draws
+    - add_metad_draws
+    - metad_rvars
+    - add_metad_rvars
     - mean_confidence_draws
     - add_mean_confidence_draws
+    - mean_confidence_rvars
+    - add_mean_confidence_rvars
     - metacognitive_bias_draws
     - add_metacognitive_bias_draws
+    - metacognitive_bias_rvars
+    - add_metacognitive_bias_rvars
     - roc1_draws
     - add_roc1_draws
+    - roc1_rvars
+    - add_roc1_rvars
     - roc2_draws
     - add_roc2_draws
+    - roc2_rvars
+    - add_roc2_rvars
 
   - title: Simulating from the meta-d' model
     desc: >

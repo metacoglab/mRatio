@@ -3,8 +3,8 @@
 ## Introduction
 
 This vignette demonstrates how to use the `mRatio` package to fit the
-meta-d’ model (Maniscalco & Lau, 2012) to a dataset including a binary
-decision with confidence ratings.
+meta-d’ model ([Maniscalco and Lau 2012](#ref-maniscalco2012)) to a
+dataset including a binary decision with confidence ratings.
 
 ## Data preparation
 
@@ -712,3 +712,9 @@ draws.roc2 |>
 ```
 
 ![](mRatio_files/figure-html/unnamed-chunk-14-1.png)
+
+## References
+
+Maniscalco, Brian, and Hakwan Lau. 2012. “A Signal Detection Theoretic
+Approach for Estimating Metacognitive Sensitivity from Confidence
+Ratings.” *Consciousness and Cognition* 21 (1): 422–30.

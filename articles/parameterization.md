@@ -2,7 +2,8 @@
 
 This vignette describes the parameterization of the meta-d’ model used
 in the `mRatio` package. For an in-depth review, we refer readers to
-Maniscalco & Lau (2012, 2014).
+([Maniscalco and Lau 2012](#ref-maniscalco2012),
+[2014](#ref-maniscalco2014)).
 
 ## Introduction
 
@@ -163,18 +164,19 @@ model fitting.
 
 The meta-d’ model requires the parameter \textrm{meta-}c to be fixed to
 be equal with respect to the type 1 criterion c. As discussed by
-Maniscalco & Lau (2014), there are multiple ways of fixing
-\textrm{meta-}c. The `mRatio` package implements two:
+([Maniscalco and Lau 2014](#ref-maniscalco2014)), there are multiple
+ways of fixing \textrm{meta-}c. The `mRatio` package implements two:
 
 Under the fixed parameterization, \textrm{meta-}c = c. This
 parameterization is used as the default, since it was also used in the
 [Hmeta-d toolbox](https://github.com/metacoglab/HMeta-d) (see also
-Fleming, 2017).
+Fleming ([2017](#ref-fleming2017))).
 
 Alternatively, under the relative parameterization,
 \frac{\textrm{meta-}c}{\textrm{meta-}d'} = \frac{c}{d'}, which is
 achieved by setting \textrm{meta-}c = M c. This parameterization was
-used in Maniscalco & Lau (2012, 2014).
+used in ([Maniscalco and Lau 2012](#ref-maniscalco2012),
+[2014](#ref-maniscalco2014)).
 
 To switch between these two parameterizations, the `fit_metad` and
 `sim_metad` functions have an argument `metac_absolute` which is `TRUE`
@@ -225,3 +227,17 @@ parameterization, the confidence criteria can be computed as follows:
 \\ \textrm{meta-}c_2^1 &= \textrm{meta-}c +
 \textrm{cumulative}\\\textrm{sum}\left(e^{\textrm{dmeta-}c_2^1}\right)
 \end{align\*}
+
+## References
+
+Fleming, Stephen M. 2017. “HMeta-d: Hierarchical Bayesian Estimation of
+Metacognitive Efficiency from Confidence Ratings.” *Neuroscience of
+Consciousness* 2017 (1): nix007.
+
+Maniscalco, Brian, and Hakwan Lau. 2012. “A Signal Detection Theoretic
+Approach for Estimating Metacognitive Sensitivity from Confidence
+Ratings.” *Consciousness and Cognition* 21 (1): 422–30.
+
+———. 2014. “Signal Detection Theory Analysis of Type 1 and Type 2 Data:
+Meta-d′, Response-Specific Meta-d′, and the Unequal Variance SDT Model.”
+In *The Cognitive Neuroscience of Metacognition*, 25–66. Springer.

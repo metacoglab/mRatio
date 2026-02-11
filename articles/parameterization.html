@@ -77,7 +77,7 @@
     
 <p>This vignette describes the parameterization of the meta-d’ model
 used in the <code>mRatio</code> package. For an in-depth review, we
-refer readers to Maniscalco &amp; Lau (2012, 2014).</p>
+refer readers to <span class="citation">(<a href="#ref-maniscalco2012">Maniscalco and Lau 2012</a>, <a href="#ref-maniscalco2014">2014</a>)</span>.</p>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -260,15 +260,15 @@ model fitting.</p>
 </h2>
 <p>The meta-d’ model requires the parameter <span class="math inline">\textrm{meta-}c</span> to be fixed to be equal with
 respect to the type 1 criterion <span class="math inline">c</span>. As
-discussed by Maniscalco &amp; Lau (2014), there are multiple ways of
-fixing <span class="math inline">\textrm{meta-}c</span>. The
-<code>mRatio</code> package implements two:</p>
+discussed by <span class="citation">(<a href="#ref-maniscalco2014">Maniscalco and Lau 2014</a>)</span>, there
+are multiple ways of fixing <span class="math inline">\textrm{meta-}c</span>. The <code>mRatio</code>
+package implements two:</p>
 <p>Under the fixed parameterization, <span class="math inline">\textrm{meta-}c = c</span>. This parameterization is
 used as the default, since it was also used in the <a href="https://github.com/metacoglab/HMeta-d" class="external-link">Hmeta-d toolbox</a> (see
-also Fleming, 2017).</p>
+also <span class="citation">Fleming (<a href="#ref-fleming2017">2017</a>)</span>).</p>
 <p>Alternatively, under the relative parameterization, <span class="math inline">\frac{\textrm{meta-}c}{\textrm{meta-}d'} =
 \frac{c}{d'}</span>, which is achieved by setting <span class="math inline">\textrm{meta-}c = M c</span>. This parameterization
-was used in Maniscalco &amp; Lau (2012, 2014).</p>
+was used in <span class="citation">(<a href="#ref-maniscalco2012">Maniscalco and Lau 2012</a>, <a href="#ref-maniscalco2014">2014</a>)</span>.</p>
 <p>To switch between these two parameterizations, the
 <code>fit_metad</code> and <code>sim_metad</code> functions have an
 argument <code>metac_absolute</code> which is <code>TRUE</code> by
@@ -328,6 +328,29 @@ confidence criteria can be computed as follows:</p>
 \textrm{cumulative}\_\textrm{sum}\left(e^{\textrm{dmeta-}c_2^1}\right)
 \end{align*}
 </span></p>
+</div>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-fleming2017" class="csl-entry">
+Fleming, Stephen M. 2017. <span>“HMeta-d: Hierarchical Bayesian
+Estimation of Metacognitive Efficiency from Confidence Ratings.”</span>
+<em>Neuroscience of Consciousness</em> 2017 (1): nix007.
+</div>
+<div id="ref-maniscalco2012" class="csl-entry">
+Maniscalco, Brian, and Hakwan Lau. 2012. <span>“A Signal Detection
+Theoretic Approach for Estimating Metacognitive Sensitivity from
+Confidence Ratings.”</span> <em>Consciousness and Cognition</em> 21 (1):
+422–30.
+</div>
+<div id="ref-maniscalco2014" class="csl-entry">
+———. 2014. <span>“Signal Detection Theory Analysis of Type 1 and Type 2
+Data: Meta-d′, Response-Specific Meta-d′, and the Unequal Variance SDT
+Model.”</span> In <em>The Cognitive Neuroscience of Metacognition</em>,
+25–66. Springer.
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

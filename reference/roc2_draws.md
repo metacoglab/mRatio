@@ -95,9 +95,9 @@ m <- fit_metad(N ~ 1, sim_metad(), chains = 1, iter = 500)
 #> Chain 1: Iteration: 450 / 500 [ 90%]  (Sampling)
 #> Chain 1: Iteration: 500 / 500 [100%]  (Sampling)
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 0.033 seconds (Warm-up)
-#> Chain 1:                0.028 seconds (Sampling)
-#> Chain 1:                0.061 seconds (Total)
+#> Chain 1:  Elapsed Time: 0.032 seconds (Warm-up)
+#> Chain 1:                0.027 seconds (Sampling)
+#> Chain 1:                0.059 seconds (Total)
 #> Chain 1: 
 #> Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
 #> Running the chains for more iterations may help. See

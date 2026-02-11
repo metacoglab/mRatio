@@ -17,14 +17,19 @@ approach. The mRatio package builds on the Hmeta-d toolbox through
 implementation as a custom family in the
 [brms](https://paulbuerkner.com/brms/) package, which itself provides a
 friendly interface to the probabilistic programming language
-[Stan](https://mc-stan.org). This provides major benefits: \* Model
-designs can be specified as simple `R` formulas \* Support for complex
-model designs (e.g., multilevel models, distributional models) \*
-Interfaces to other packages surrounding `brms` (e.g., `tidybayes`,
-`ggdist`, `bayesplot`, `loo`, `posterior`, `bridgesampling`) \*
-Computation of model-implied quantities (e.g., mean confidence, type 1
-and type 2 receiver operating characteristic curves, metacognitive bias)
-\* Increased sampling efficiency and better convergence diagnostics
+[Stan](https://mc-stan.org).
+
+This provides major benefits:
+
+- Model designs can be specified as simple `R` formulas
+- Support for complex model designs (e.g., multilevel models,
+  distributional models)
+- Interfaces to other packages surrounding `brms` (e.g., `tidybayes`,
+  `ggdist`, `bayesplot`, `loo`, `posterior`, `bridgesampling`)
+- Computation of model-implied quantities (e.g., mean confidence, type 1
+  and type 2 receiver operating characteristic curves, metacognitive
+  bias)
+- Increased sampling efficiency and better convergence diagnostics
 
 ## Installation
 
@@ -44,16 +49,16 @@ confidence ratings:
     #> # A tibble: 1,000 × 5
     #>    trial stimulus response correct confidence
     #>    <int>    <int>    <int>   <int>      <int>
-    #>  1     1        1        0       0          1
+    #>  1     1        0        0       1          4
     #>  2     2        0        0       1          3
-    #>  3     3        1        1       1          3
-    #>  4     4        0        0       1          3
-    #>  5     5        1        0       0          1
-    #>  6     6        1        1       1          2
-    #>  7     7        0        1       0          1
-    #>  8     8        0        0       1          4
-    #>  9     9        0        0       1          1
-    #> 10    10        0        1       0          4
+    #>  3     3        1        0       0          1
+    #>  4     4        0        0       1          2
+    #>  5     5        1        1       1          3
+    #>  6     6        0        1       0          1
+    #>  7     7        0        0       1          2
+    #>  8     8        0        1       0          1
+    #>  9     9        1        0       0          3
+    #> 10    10        1        1       1          3
     #> # ℹ 990 more rows
 
 You can fit an intercepts-only meta-d’ model using `fit_metad`:
@@ -97,16 +102,16 @@ within-participants manipulation:
     #> # Groups:   participant, condition [50]
     #>    participant condition trial stimulus response correct confidence
     #>          <int>     <int> <int>    <int>    <int>   <int>      <int>
-    #>  1           1         1     1        0        0       1          4
-    #>  2           1         1     2        0        0       1          2
-    #>  3           1         1     3        1        1       1          4
-    #>  4           1         1     4        0        0       1          4
-    #>  5           1         1     5        1        0       0          3
-    #>  6           1         1     6        0        0       1          2
-    #>  7           1         1     7        0        0       1          4
-    #>  8           1         1     8        0        0       1          4
-    #>  9           1         1     9        0        0       1          4
-    #> 10           1         1    10        1        0       0          3
+    #>  1           1         1     1        0        0       1          3
+    #>  2           1         1     2        1        1       1          3
+    #>  3           1         1     3        1        1       1          3
+    #>  4           1         1     4        0        1       0          1
+    #>  5           1         1     5        1        1       1          2
+    #>  6           1         1     6        1        1       1          3
+    #>  7           1         1     7        1        0       0          3
+    #>  8           1         1     8        0        0       1          2
+    #>  9           1         1     9        1        1       1          4
+    #> 10           1         1    10        0        0       1          4
     #> # ℹ 4,990 more rows
 
 To account for the repeated measures in this design, you can simply

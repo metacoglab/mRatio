@@ -22,12 +22,15 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 The mRatio package is designed to fit the meta-d’ model for confidence
-ratings [@maniscalco2012; @maniscalco2014]. Like the [Hmeta-d toolbox](https://github.com/metacoglab/HMeta-d) [@fleming2017], the mRatio package uses a Bayesian modeling approach. The mRatio package builds on the Hmeta-d toolbox through implementation as a custom family in the [brms](https://paulbuerkner.com/brms/) package, which itself provides a friendly interface to the probabilistic programming language [Stan](https://mc-stan.org). This provides major benefits:
-* Model designs can be specified as simple `R` formulas
-* Support for complex model designs (e.g., multilevel models, distributional models)
-* Interfaces to other packages surrounding `brms` (e.g., `tidybayes`, `ggdist`, `bayesplot`, `loo`, `posterior`, `bridgesampling`)
-* Computation of model-implied quantities (e.g., mean confidence, type 1 and type 2 receiver operating characteristic curves, metacognitive bias)
-* Increased sampling efficiency and better convergence diagnostics
+ratings [@maniscalco2012; @maniscalco2014]. Like the [Hmeta-d toolbox](https://github.com/metacoglab/HMeta-d) [@fleming2017], the mRatio package uses a Bayesian modeling approach. The mRatio package builds on the Hmeta-d toolbox through implementation as a custom family in the [brms](https://paulbuerkner.com/brms/) package, which itself provides a friendly interface to the probabilistic programming language [Stan](https://mc-stan.org). 
+
+This provides major benefits:
+
+  - Model designs can be specified as simple `R` formulas
+  - Support for complex model designs (e.g., multilevel models, distributional models)
+  - Interfaces to other packages surrounding `brms` (e.g., `tidybayes`, `ggdist`, `bayesplot`, `loo`, `posterior`, `bridgesampling`)
+  - Computation of model-implied quantities (e.g., mean confidence, type 1 and type 2 receiver operating characteristic curves, metacognitive bias)
+  - Increased sampling efficiency and better convergence diagnostics
 
 
 
